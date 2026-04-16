@@ -1,0 +1,11 @@
+image: python:3.11.2
+pipelines:
+  default:
+    - step:
+        script:
+          - echo "hello world!"
+  branches:
+    staging:
+      - step:  
+          script:
+            - ssh ubuntu@16.170.34.199 /home/ubuntu/real-time-chat/staging/real-time-backend/devCdScript.sh

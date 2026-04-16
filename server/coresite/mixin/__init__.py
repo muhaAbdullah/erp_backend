@@ -1,0 +1,1 @@
+from .abstracttimestemp_model import AbstractTimeStampModel
