@@ -1,0 +1,2544 @@
+openapi: 3.0.3
+info:
+  title: ERP Backend API
+  version: 1.0.0
+  description: REST API for user authentication and profile management.
+paths:
+  /api/user-profile/user-profile/:
+    get:
+      operationId: user_profile_user_profile_list
+      description: Returns a paginated list of all active user profiles. Supports
+        filtering by user, user_type, is_active, is_staff, is_superuser, and email.
+        Supports full-text search on first_name, last_name, and username.
+      summary: List user profiles
+      parameters:
+      - in: query
+        name: limit
+        schema:
+          type: integer
+        description: Number of results to return (default 100, max 100).
+      - in: query
+        name: offset
+        schema:
+          type: integer
+        description: Starting position in the result set.
+      - in: query
+        name: search
+        schema:
+          type: string
+        description: Search by first_name, last_name, or username.
+      - in: query
+        name: user
+        schema:
+          type: integer
+        description: Filter by user ID.
+      - in: query
+        name: user__email
+        schema:
+          type: string
+        description: Filter by exact email address.
+      - in: query
+        name: user__is_active
+        schema:
+          type: boolean
+        description: Filter by account active status.
+      - in: query
+        name: user__is_staff
+        schema:
+          type: boolean
+      - in: query
+        name: user__is_superuser
+        schema:
+          type: boolean
+      - in: query
+        name: user__user_type
+        schema:
+          type: string
+        description: 'Filter by user type: user, admin, super_admin.'
+      tags:
+      - User Profile
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUserProfileList'
+          description: ''
+    post:
+      operationId: user_profile_user_profile_create
+      description: Creates a new profile for the authenticated user.
+      summary: Create a user profile
+      tags:
+      - User Profile
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserProfileRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserProfileRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserProfileRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+          description: ''
+  /api/user-profile/user-profile/{username}/:
+    get:
+      operationId: user_profile_user_profile_retrieve
+      description: Returns the profile for the given username.
+      summary: Retrieve a user profile
+      parameters:
+      - in: path
+        name: username
+        schema:
+          type: string
+        description: Username of the user whose profile to retrieve.
+        required: true
+      tags:
+      - User Profile
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+          description: ''
+    put:
+      operationId: user_profile_user_profile_update
+      description: Fully updates the profile for the given username. Requires authentication.
+      summary: Update a user profile
+      parameters:
+      - in: path
+        name: username
+        schema:
+          type: string
+        description: Username of the user whose profile to update.
+        required: true
+      tags:
+      - User Profile
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserProfileRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserProfileRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserProfileRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+          description: ''
+    patch:
+      operationId: user_profile_user_profile_partial_update
+      description: Partially updates the profile for the given username. Requires
+        authentication.
+      summary: Partial update a user profile
+      parameters:
+      - in: path
+        name: username
+        schema:
+          type: string
+        description: Username of the user whose profile to partially update.
+        required: true
+      tags:
+      - User Profile
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUserProfileRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUserProfileRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUserProfileRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+          description: ''
+    delete:
+      operationId: user_profile_user_profile_destroy
+      description: Deletes the profile for the given username. Requires authentication.
+      summary: Delete a user profile
+      parameters:
+      - in: path
+        name: username
+        schema:
+          type: string
+        description: Username of the user whose profile to delete.
+        required: true
+      tags:
+      - User Profile
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/user/account-activation/{secret_key}:
+    post:
+      operationId: user_account_activation_create
+      description: Activates a user account using the secret key sent to the user's
+        email. The token expires 30 minutes after registration.
+      summary: Activate user account
+      parameters:
+      - in: path
+        name: secret_key
+        schema:
+          type: string
+        description: 50-character activation token sent to the user's email.
+        required: true
+      tags:
+      - Auth
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActivationSuccess'
+          description: Account activated successfully.
+        '400':
+          description: Already activated or invalid token.
+        '406':
+          description: User not found.
+  /api/user/account-status/:
+    post:
+      operationId: user_account_status_create
+      description: Returns whether the account for the given email is active, along
+        with the user's type (user / admin / super_admin).
+      summary: Check account status
+      tags:
+      - Auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountStatusRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AccountStatusRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AccountStatusRequestRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountStatusResponse'
+          description: Account status returned.
+        '404':
+          description: User not found.
+        '500':
+          description: Internal server error.
+  /api/user/change-password/:
+    put:
+      operationId: user_change_password_update
+      tags:
+      - user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChangePassword'
+          description: ''
+    patch:
+      operationId: user_change_password_partial_update
+      tags:
+      - user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedChangePasswordRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedChangePasswordRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedChangePasswordRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChangePassword'
+          description: ''
+  /api/user/create-user/:
+    post:
+      operationId: user_create_user_create
+      description: Create a new user. Super admin must provide organization_id, org
+        admin creates in their own organization.
+      summary: Create User (Admin Only)
+      tags:
+      - User Management
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminCreateUserRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AdminCreateUserRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AdminCreateUserRequestRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminCreateUserSuccess'
+          description: User created successfully
+        '400':
+          description: Validation error
+        '403':
+          description: Permission denied
+        '404':
+          description: Organization or Role not found
+  /api/user/email-exist/:
+    post:
+      operationId: user_email_exist_create
+      description: Returns whether the given email address is already registered in
+        the system.
+      summary: Check if email exists
+      tags:
+      - Auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailExistRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EmailExistRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EmailExistRequestRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailExistTrue'
+          description: Email exists.
+        '400':
+          description: Email does not exist.
+        '500':
+          description: Internal server error.
+  /api/user/forget-password/:
+    post:
+      operationId: user_forget_password_create
+      description: Sends a password-reset link to the given email address. The link
+        is valid for 15 minutes.
+      summary: Request password reset
+      tags:
+      - Auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForgetPasswordRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ForgetPasswordRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ForgetPasswordRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForgetPasswordSuccess'
+          description: Reset email sent.
+        '400':
+          description: User not found.
+  /api/user/login/:
+    post:
+      operationId: user_login_create
+      description: Authenticates a user with email and password, returns an access
+        and refresh JWT token pair.
+      summary: Login
+      tags:
+      - Auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPairRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPairRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPairRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenObtainPair'
+          description: ''
+  /api/user/me/:
+    get:
+      operationId: user_me_retrieve
+      description: Returns the complete profile details of the currently authenticated
+        user, including organization, role, permissions, and profile information.
+      summary: Get current user
+      tags:
+      - User
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetailResponse'
+          description: Current user details
+        '401':
+          description: Authentication credentials not provided or invalid.
+    put:
+      operationId: user_me_update
+      description: Fully updates the profile of the currently authenticated user.
+        You can update user fields and nested profile information. Organization and
+        role can be updated if permitted.
+      summary: Update current user
+      tags:
+      - User
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdateRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserUpdateRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserUpdateRequestRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: User updated successfully
+        '400':
+          description: Validation error.
+        '401':
+          description: Authentication credentials not provided or invalid.
+    patch:
+      operationId: user_me_partial_update
+      description: Partially updates the profile of the currently authenticated user.
+        Only the fields provided will be updated. Others remain unchanged.
+      summary: Partial update current user
+      tags:
+      - User
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUserPartialUpdateRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUserPartialUpdateRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUserPartialUpdateRequestRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: User updated successfully
+        '400':
+          description: Validation error.
+        '401':
+          description: Authentication credentials not provided or invalid.
+    delete:
+      operationId: user_me_destroy
+      description: Deletes the account of the currently authenticated user. This action
+        is irreversible.
+      summary: Delete current user
+      tags:
+      - User
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: User deleted successfully
+        '401':
+          description: Authentication credentials not provided or invalid.
+  /api/user/organizations/:
+    get:
+      operationId: user_organizations_list
+      description: Get list of organizations. Super admins see all, regular users
+        see only their organization.
+      summary: List all organizations
+      parameters:
+      - in: query
+        name: is_active
+        schema:
+          type: boolean
+        description: Filter by active status
+      - in: query
+        name: search
+        schema:
+          type: string
+        description: Search by name or description
+      tags:
+      - Organizations
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrganizationList'
+          description: ''
+    post:
+      operationId: user_organizations_create
+      description: Create a new organization. Only super admins can perform this action.
+      summary: Create new organization
+      tags:
+      - Organizations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrganizationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OrganizationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OrganizationRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+          description: ''
+        '400':
+          description: Validation error
+        '403':
+          description: Permission denied
+  /api/user/organizations/{id}/:
+    get:
+      operationId: user_organizations_retrieve
+      description: Get detailed information about a specific organization.
+      summary: Retrieve organization details
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Organization.
+        required: true
+      tags:
+      - Organizations
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+          description: ''
+        '404':
+          description: Organization not found
+    put:
+      operationId: user_organizations_update
+      description: Update an existing organization. Only super admins can perform
+        this action.
+      summary: Update organization
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Organization.
+        required: true
+      tags:
+      - Organizations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrganizationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OrganizationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OrganizationRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+          description: ''
+        '400':
+          description: Validation error
+        '403':
+          description: Permission denied
+        '404':
+          description: Organization not found
+    patch:
+      operationId: user_organizations_partial_update
+      description: Partially update an organization. Only super admins can perform
+        this action.
+      summary: Partial update organization
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Organization.
+        required: true
+      tags:
+      - Organizations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedOrganizationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedOrganizationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedOrganizationRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+          description: ''
+        '400':
+          description: Validation error
+        '403':
+          description: Permission denied
+        '404':
+          description: Organization not found
+    delete:
+      operationId: user_organizations_destroy
+      description: Delete an organization. Only super admins can perform this action.
+      summary: Delete organization
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Organization.
+        required: true
+      tags:
+      - Organizations
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: Organization deleted successfully
+        '403':
+          description: Permission denied
+        '404':
+          description: Organization not found
+  /api/user/organizations/{id}/statistics/:
+    get:
+      operationId: user_organizations_statistics_retrieve
+      description: Get statistics for a specific organization (users count, roles
+        count, etc.)
+      summary: Get organization statistics
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Organization.
+        required: true
+      tags:
+      - Organizations
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  users_count:
+                    type: integer
+                  roles_count:
+                    type: integer
+                  active_users_count:
+                    type: integer
+          description: Organization statistics
+        '404':
+          description: Organization not found
+  /api/user/permissions/:
+    get:
+      operationId: user_permissions_list
+      description: Get list of all available permissions in the system.
+      summary: List all permissions
+      parameters:
+      - in: query
+        name: search
+        schema:
+          type: string
+        description: Search by name, code or description
+      tags:
+      - Permissions
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PermissionList'
+          description: ''
+    post:
+      operationId: user_permissions_create
+      description: Create a new permission. Only super admins can perform this action.
+      summary: Create new permission
+      tags:
+      - Permissions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PermissionRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PermissionRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PermissionRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Permission'
+          description: ''
+        '400':
+          description: Validation error
+        '403':
+          description: Permission denied
+  /api/user/permissions/{id}/:
+    get:
+      operationId: user_permissions_retrieve
+      description: Get detailed information about a specific permission.
+      summary: Retrieve permission details
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Permission.
+        required: true
+      tags:
+      - Permissions
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Permission'
+          description: ''
+        '404':
+          description: Permission not found
+    put:
+      operationId: user_permissions_update
+      description: Update an existing permission. Only super admins can perform this
+        action.
+      summary: Update permission
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Permission.
+        required: true
+      tags:
+      - Permissions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PermissionRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PermissionRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PermissionRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Permission'
+          description: ''
+        '400':
+          description: Validation error
+        '403':
+          description: Permission denied
+        '404':
+          description: Permission not found
+    patch:
+      operationId: user_permissions_partial_update
+      description: Partially update a permission. Only super admins can perform this
+        action.
+      summary: Partial update permission
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Permission.
+        required: true
+      tags:
+      - Permissions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedPermissionRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedPermissionRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedPermissionRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Permission'
+          description: ''
+        '400':
+          description: Validation error
+        '403':
+          description: Permission denied
+        '404':
+          description: Permission not found
+    delete:
+      operationId: user_permissions_destroy
+      description: Delete a permission. Only super admins can perform this action.
+      summary: Delete permission
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Permission.
+        required: true
+      tags:
+      - Permissions
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: Permission deleted successfully
+        '403':
+          description: Permission denied
+        '404':
+          description: Permission not found
+  /api/user/register/:
+    post:
+      operationId: user_register_create
+      description: Public registration is disabled. Please contact your system administrator
+        to create an account. Admins can create users via POST /api/user/create-user/
+        or POST /api/user/users/
+      summary: Public registration (DISABLED)
+      tags:
+      - Auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RegisterRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RegisterRequestRequest'
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterDisabled'
+              examples:
+                RegistrationAttempt:
+                  value:
+                    error: Public registration is disabled
+                    message: Please contact your system administrator to create an
+                      account
+                  summary: Registration attempt
+          description: Public registration is disabled
+  /api/user/resend-activation/:
+    post:
+      operationId: user_resend_activation_create
+      description: Resends the account activation email to the given address. Only
+        valid for accounts that have not yet been activated.
+      summary: Resend activation email
+      tags:
+      - Auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResendEmailRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ResendEmailRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ResendEmailRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResendActivationSuccess'
+          description: Activation email sent.
+        '400':
+          description: Account already activated or not found.
+  /api/user/reset-password/{secret_key}:
+    post:
+      operationId: user_reset_password_create
+      description: Sets a new password for the user identified by the reset token.
+        The token must be used within 15 minutes of being issued.
+      summary: Reset password
+      parameters:
+      - in: path
+        name: secret_key
+        schema:
+          type: string
+        description: 50-character password-reset token sent to the user's email.
+        required: true
+      tags:
+      - Auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResetPasswordSuccess'
+          description: Password reset successfully.
+        '400':
+          description: Expired or invalid token.
+        '406':
+          description: Unexpected error.
+  /api/user/roles/:
+    get:
+      operationId: user_roles_list
+      description: Get list of roles in user's organization. Super admins see all
+        roles.
+      summary: List all roles
+      parameters:
+      - in: query
+        name: is_active
+        schema:
+          type: boolean
+        description: Filter by active status
+      - in: query
+        name: organization
+        schema:
+          type: integer
+        description: Filter by organization ID
+      - in: query
+        name: search
+        schema:
+          type: string
+        description: Search by name or description
+      tags:
+      - Roles
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RoleList'
+          description: ''
+    post:
+      operationId: user_roles_create
+      description: Create a new role in user's organization. Only organization admins
+        can perform this action.
+      summary: Create new role
+      tags:
+      - Roles
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoleRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RoleRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RoleRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Role'
+          description: ''
+        '400':
+          description: Validation error
+        '403':
+          description: Permission denied
+  /api/user/roles/{id}/:
+    get:
+      operationId: user_roles_retrieve
+      description: Get detailed information about a specific role, including its permissions.
+      summary: Retrieve role details
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Role.
+        required: true
+      tags:
+      - Roles
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Role'
+          description: ''
+        '404':
+          description: Role not found
+    put:
+      operationId: user_roles_update
+      description: Update an existing role. Only organization admins can perform this
+        action.
+      summary: Update role
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Role.
+        required: true
+      tags:
+      - Roles
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoleRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RoleRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RoleRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Role'
+          description: ''
+        '400':
+          description: Validation error
+        '403':
+          description: Permission denied
+        '404':
+          description: Role not found
+    patch:
+      operationId: user_roles_partial_update
+      description: Partially update a role. Only organization admins can perform this
+        action.
+      summary: Partial update role
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Role.
+        required: true
+      tags:
+      - Roles
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedRoleRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedRoleRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedRoleRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Role'
+          description: ''
+        '400':
+          description: Validation error
+        '403':
+          description: Permission denied
+        '404':
+          description: Role not found
+    delete:
+      operationId: user_roles_destroy
+      description: Delete a role. Only organization admins can perform this action.
+      summary: Delete role
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Role.
+        required: true
+      tags:
+      - Roles
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: Role deleted successfully
+        '403':
+          description: Permission denied
+        '404':
+          description: Role not found
+  /api/user/roles/{id}/assign_permissions/:
+    post:
+      operationId: user_roles_assign_permissions_create
+      description: Assign multiple permissions to a role. Replaces existing permissions.
+      summary: Assign permissions to role
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Role.
+        required: true
+      tags:
+      - Roles
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignPermissionRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AssignPermissionRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AssignPermissionRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: Permissions assigned successfully
+        '400':
+          description: Validation error
+        '404':
+          description: Role not found
+  /api/user/roles/{id}/permissions/:
+    get:
+      operationId: user_roles_permissions_retrieve
+      description: Get list of permissions assigned to this role.
+      summary: Get role permissions
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Role.
+        required: true
+      tags:
+      - Roles
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: string
+                    permission_code:
+                      type: string
+          description: List of permissions
+        '404':
+          description: Role not found
+  /api/user/token-refresh/:
+    post:
+      operationId: user_token_refresh_create
+      description: Returns a new access token using a valid refresh token.
+      summary: Refresh access token
+      tags:
+      - Auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
+  /api/user/token/verify/:
+    post:
+      operationId: user_token_verify_create
+      description: Checks whether the given JWT token is still valid.
+      summary: Verify token
+      tags:
+      - Auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenVerifyRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenVerifyRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenVerifyRequest'
+        required: true
+      responses:
+        '200':
+          description: No response body
+  /api/user/users/:
+    get:
+      operationId: user_users_list
+      description: List all users. Super admin sees all users, org admin sees only
+        their organization's users.
+      summary: List Users
+      tags:
+      - User Management
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserDetail'
+          description: ''
+        '403':
+          description: Permission denied
+    post:
+      operationId: user_users_create
+      description: Create a new user. Super admin must provide organization_id, org
+        admin creates in their own organization.
+      summary: Create User (Admin Only)
+      tags:
+      - User Management
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminCreateUserRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AdminCreateUserRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AdminCreateUserRequestRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminCreateUserSuccess'
+          description: User created successfully
+        '400':
+          description: Validation error
+        '403':
+          description: Permission denied
+        '404':
+          description: Organization or Role not found
+  /api/user/users/{id}/:
+    get:
+      operationId: user_users_retrieve
+      description: Retrieve details of a specific user.
+      summary: Get User Details
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this user.
+        required: true
+      tags:
+      - User Management
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetail'
+          description: ''
+        '403':
+          description: Permission denied
+        '404':
+          description: User not found
+    put:
+      operationId: user_users_update
+      description: Update user information. Cannot change organization.
+      summary: Update User
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this user.
+        required: true
+      tags:
+      - User Management
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserDetailRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserDetailRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserDetailRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetail'
+          description: ''
+        '400':
+          description: Validation error
+        '403':
+          description: Permission denied
+        '404':
+          description: User not found
+    patch:
+      operationId: user_users_partial_update
+      description: Partially update user information. Cannot change organization.
+      summary: Partial Update User
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this user.
+        required: true
+      tags:
+      - User Management
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUserDetailRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUserDetailRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUserDetailRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetail'
+          description: ''
+        '400':
+          description: Validation error
+        '403':
+          description: Permission denied
+        '404':
+          description: User not found
+    delete:
+      operationId: user_users_destroy
+      description: Delete a user from the system.
+      summary: Delete User
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this user.
+        required: true
+      tags:
+      - User Management
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: User deleted successfully
+        '403':
+          description: Permission denied
+        '404':
+          description: User not found
+components:
+  schemas:
+    AccountStatusRequestRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+      required:
+      - email
+    AccountStatusResponse:
+      type: object
+      properties:
+        message:
+          type: boolean
+        status:
+          type: string
+        user_type:
+          type: string
+      required:
+      - message
+      - status
+      - user_type
+    ActivationSuccess:
+      type: object
+      properties:
+        message:
+          type: string
+        status:
+          type: string
+      required:
+      - message
+      - status
+    AdminCreateUserProfileRequestRequest:
+      type: object
+      properties:
+        first_name:
+          type: string
+          minLength: 1
+          description: User first name
+        last_name:
+          type: string
+          minLength: 1
+          description: User last name
+    AdminCreateUserRequestRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+          description: User email address
+        username:
+          type: string
+          minLength: 1
+          description: Unique username
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+          description: User password
+        organization_id:
+          type: integer
+          description: Organization ID (required for super admin, ignored for org
+            admin)
+        role_id:
+          type: integer
+          description: Role ID (must belong to same organization)
+        profile:
+          allOf:
+          - $ref: '#/components/schemas/AdminCreateUserProfileRequestRequest'
+          description: Optional user profile information
+      required:
+      - email
+      - password
+      - username
+    AdminCreateUserSuccess:
+      type: object
+      properties:
+        message:
+          type: string
+        user_id:
+          type: integer
+        email:
+          type: string
+          format: email
+      required:
+      - email
+      - message
+      - user_id
+    AssignPermissionRequest:
+      type: object
+      description: Serializer for assigning permissions to a role.
+      properties:
+        role_id:
+          type: integer
+        permission_ids:
+          type: array
+          items:
+            type: integer
+          description: List of permission IDs to assign to the role
+      required:
+      - permission_ids
+      - role_id
+    ChangePassword:
+      type: object
+      description: Serializer for password change endpoint.
+      properties:
+        old_password:
+          type: string
+        new_password:
+          type: string
+      required:
+      - new_password
+      - old_password
+    ChangePasswordRequest:
+      type: object
+      description: Serializer for password change endpoint.
+      properties:
+        old_password:
+          type: string
+          minLength: 1
+        new_password:
+          type: string
+          minLength: 1
+      required:
+      - new_password
+      - old_password
+    EmailExistRequestRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+      required:
+      - email
+    EmailExistTrue:
+      type: object
+      properties:
+        message:
+          type: boolean
+        status:
+          type: string
+      required:
+      - message
+      - status
+    ForgetPasswordRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+      required:
+      - email
+    ForgetPasswordSuccess:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+      - message
+    Organization:
+      type: object
+      description: Serializer for Organization model.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+          nullable: true
+        is_active:
+          type: boolean
+        users_count:
+          type: string
+          readOnly: true
+        roles_count:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - name
+      - roles_count
+      - updated_at
+      - users_count
+    OrganizationList:
+      type: object
+      description: Lightweight serializer for listing organizations.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        is_active:
+          type: boolean
+      required:
+      - id
+      - name
+    OrganizationListRequest:
+      type: object
+      description: Lightweight serializer for listing organizations.
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        is_active:
+          type: boolean
+      required:
+      - name
+    OrganizationRequest:
+      type: object
+      description: Serializer for Organization model.
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        description:
+          type: string
+          nullable: true
+        is_active:
+          type: boolean
+      required:
+      - name
+    PaginatedUserProfileList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserProfile'
+    PatchedChangePasswordRequest:
+      type: object
+      description: Serializer for password change endpoint.
+      properties:
+        old_password:
+          type: string
+          minLength: 1
+        new_password:
+          type: string
+          minLength: 1
+    PatchedOrganizationRequest:
+      type: object
+      description: Serializer for Organization model.
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        description:
+          type: string
+          nullable: true
+        is_active:
+          type: boolean
+    PatchedPermissionRequest:
+      type: object
+      description: Serializer for Permission model.
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: Human-readable permission name (e.g., 'Create User')
+          maxLength: 255
+        permission_code:
+          type: string
+          minLength: 1
+          description: Unique code for permission (e.g., 'user.create')
+          maxLength: 255
+        description:
+          type: string
+          nullable: true
+    PatchedRoleRequest:
+      type: object
+      description: |-
+        Serializer for Role model with strict organization enforcement.
+
+        Organization is read-only and automatically assigned from the logged-in user.
+        This prevents API clients from creating roles in other organizations.
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: Role name (e.g., 'Admin', 'Manager', 'User')
+          maxLength: 255
+        description:
+          type: string
+          nullable: true
+        is_active:
+          type: boolean
+    PatchedUserDetailRequest:
+      type: object
+      description: |-
+        Serializer for User details with role-organization validation.
+
+        Organization is read-only to prevent users from changing their organization.
+        Role assignment is validated to ensure it belongs to the user's organization.
+      properties:
+        username:
+          type: string
+          minLength: 1
+          maxLength: 255
+        email:
+          type: string
+          format: email
+          minLength: 1
+          title: Email address
+          maxLength: 255
+        user_type:
+          $ref: '#/components/schemas/UserTypeEnum'
+        is_active:
+          type: boolean
+        role:
+          type: integer
+          nullable: true
+          description: Role assigned to this user
+        profile:
+          $ref: '#/components/schemas/UserProfileRequest'
+    PatchedUserPartialUpdateRequestRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          minLength: 1
+          description: Username
+        email:
+          type: string
+          format: email
+          minLength: 1
+          description: Email address
+        user_type:
+          type: string
+          minLength: 1
+          description: User type
+        is_active:
+          type: boolean
+          description: Account active status
+        organization:
+          type: integer
+          description: Organization ID
+        role:
+          type: integer
+          description: Role ID
+        profile:
+          $ref: '#/components/schemas/ProfilePartialUpdateRequestRequest'
+    PatchedUserProfileRequest:
+      type: object
+      properties:
+        first_name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        last_name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        image:
+          type: string
+          format: binary
+          nullable: true
+    Permission:
+      type: object
+      description: Serializer for Permission model.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          description: Human-readable permission name (e.g., 'Create User')
+          maxLength: 255
+        permission_code:
+          type: string
+          description: Unique code for permission (e.g., 'user.create')
+          maxLength: 255
+        description:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - name
+      - permission_code
+      - updated_at
+    PermissionList:
+      type: object
+      description: Lightweight serializer for listing permissions.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          description: Human-readable permission name (e.g., 'Create User')
+          maxLength: 255
+        permission_code:
+          type: string
+          description: Unique code for permission (e.g., 'user.create')
+          maxLength: 255
+      required:
+      - id
+      - name
+      - permission_code
+    PermissionListRequest:
+      type: object
+      description: Lightweight serializer for listing permissions.
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: Human-readable permission name (e.g., 'Create User')
+          maxLength: 255
+        permission_code:
+          type: string
+          minLength: 1
+          description: Unique code for permission (e.g., 'user.create')
+          maxLength: 255
+      required:
+      - name
+      - permission_code
+    PermissionRequest:
+      type: object
+      description: Serializer for Permission model.
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: Human-readable permission name (e.g., 'Create User')
+          maxLength: 255
+        permission_code:
+          type: string
+          minLength: 1
+          description: Unique code for permission (e.g., 'user.create')
+          maxLength: 255
+        description:
+          type: string
+          nullable: true
+      required:
+      - name
+      - permission_code
+    ProfilePartialUpdateRequestRequest:
+      type: object
+      properties:
+        first_name:
+          type: string
+          minLength: 1
+          description: First name
+        last_name:
+          type: string
+          minLength: 1
+          description: Last name
+        image:
+          type: string
+          format: binary
+          description: Profile image
+    ProfileResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Profile ID
+        first_name:
+          type: string
+          description: First name
+        last_name:
+          type: string
+          description: Last name
+        image:
+          type: string
+          format: uri
+          nullable: true
+          description: Profile image URL
+      required:
+      - first_name
+      - id
+      - image
+      - last_name
+    ProfileUpdateRequestRequest:
+      type: object
+      properties:
+        first_name:
+          type: string
+          minLength: 1
+          description: First name
+        last_name:
+          type: string
+          minLength: 1
+          description: Last name
+        image:
+          type: string
+          format: binary
+          description: Profile image
+    RegisterDisabled:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message
+        message:
+          type: string
+          description: Instruction message
+      required:
+      - error
+      - message
+    RegisterRequestRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+          description: Not used - registration disabled
+        username:
+          type: string
+          minLength: 1
+          description: Not used - registration disabled
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+          description: Not used - registration disabled
+    ResendActivationSuccess:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+      - message
+    ResendEmailRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+      required:
+      - email
+    ResetPasswordRequest:
+      type: object
+      properties:
+        new_password:
+          type: string
+          minLength: 1
+      required:
+      - new_password
+    ResetPasswordSuccess:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+      - message
+    Role:
+      type: object
+      description: |-
+        Serializer for Role model with strict organization enforcement.
+
+        Organization is read-only and automatically assigned from the logged-in user.
+        This prevents API clients from creating roles in other organizations.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          description: Role name (e.g., 'Admin', 'Manager', 'User')
+          maxLength: 255
+        organization:
+          allOf:
+          - $ref: '#/components/schemas/OrganizationList'
+          readOnly: true
+        description:
+          type: string
+          nullable: true
+        is_active:
+          type: boolean
+        permissions:
+          type: array
+          items:
+            $ref: '#/components/schemas/PermissionList'
+          readOnly: true
+        users_count:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - name
+      - organization
+      - permissions
+      - updated_at
+      - users_count
+    RoleList:
+      type: object
+      description: Lightweight serializer for listing roles.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          description: Role name (e.g., 'Admin', 'Manager', 'User')
+          maxLength: 255
+        organization_name:
+          type: string
+          readOnly: true
+        is_active:
+          type: boolean
+      required:
+      - id
+      - name
+      - organization_name
+    RoleRequest:
+      type: object
+      description: |-
+        Serializer for Role model with strict organization enforcement.
+
+        Organization is read-only and automatically assigned from the logged-in user.
+        This prevents API clients from creating roles in other organizations.
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: Role name (e.g., 'Admin', 'Manager', 'User')
+          maxLength: 255
+        description:
+          type: string
+          nullable: true
+        is_active:
+          type: boolean
+      required:
+      - name
+    TokenObtainPair:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+          readOnly: true
+      required:
+      - access
+      - refresh
+    TokenObtainPairRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          writeOnly: true
+          minLength: 1
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - email
+      - password
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+      required:
+      - access
+    TokenRefreshRequest:
+      type: object
+      properties:
+        refresh:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - refresh
+    TokenVerifyRequest:
+      type: object
+      properties:
+        token:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - token
+    UserDetail:
+      type: object
+      description: |-
+        Serializer for User details with role-organization validation.
+
+        Organization is read-only to prevent users from changing their organization.
+        Role assignment is validated to ensure it belongs to the user's organization.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          maxLength: 255
+        email:
+          type: string
+          format: email
+          title: Email address
+          maxLength: 255
+        user_type:
+          $ref: '#/components/schemas/UserTypeEnum'
+        is_active:
+          type: boolean
+        is_super_admin:
+          type: boolean
+          readOnly: true
+          description: Super admin has access to all organizations and bypasses all
+            permission checks
+        organization:
+          type: integer
+          readOnly: true
+          nullable: true
+          description: Organization this user belongs to
+        organization_name:
+          type: string
+          readOnly: true
+        role:
+          type: integer
+          nullable: true
+          description: Role assigned to this user
+        role_name:
+          type: string
+          readOnly: true
+        permissions:
+          type: string
+          readOnly: true
+        profile:
+          $ref: '#/components/schemas/UserProfile'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - email
+      - id
+      - is_super_admin
+      - organization
+      - organization_name
+      - permissions
+      - role_name
+      - updated_at
+      - username
+    UserDetailRequest:
+      type: object
+      description: |-
+        Serializer for User details with role-organization validation.
+
+        Organization is read-only to prevent users from changing their organization.
+        Role assignment is validated to ensure it belongs to the user's organization.
+      properties:
+        username:
+          type: string
+          minLength: 1
+          maxLength: 255
+        email:
+          type: string
+          format: email
+          minLength: 1
+          title: Email address
+          maxLength: 255
+        user_type:
+          $ref: '#/components/schemas/UserTypeEnum'
+        is_active:
+          type: boolean
+        role:
+          type: integer
+          nullable: true
+          description: Role assigned to this user
+        profile:
+          $ref: '#/components/schemas/UserProfileRequest'
+      required:
+      - email
+      - username
+    UserDetailResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: User ID
+        username:
+          type: string
+          description: Username
+        email:
+          type: string
+          format: email
+          description: Email address
+        user_type:
+          type: string
+          description: User type (e.g., user, admin)
+        is_active:
+          type: boolean
+          description: Account active status
+        is_super_admin:
+          type: boolean
+          description: Super admin status
+        organization:
+          type: integer
+          description: Organization ID
+        organization_name:
+          type: string
+          description: Organization name
+        role:
+          type: integer
+          description: Role ID
+        role_name:
+          type: string
+          description: Role name
+        permissions:
+          type: array
+          items:
+            type: string
+          description: List of permission codes
+        profile:
+          $ref: '#/components/schemas/ProfileResponse'
+        created_at:
+          type: string
+          format: date-time
+          description: Account creation timestamp
+        updated_at:
+          type: string
+          format: date-time
+          description: Last update timestamp
+      required:
+      - created_at
+      - email
+      - id
+      - is_active
+      - is_super_admin
+      - organization
+      - organization_name
+      - permissions
+      - profile
+      - role
+      - role_name
+      - updated_at
+      - user_type
+      - username
+    UserProfile:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        user:
+          type: integer
+          readOnly: true
+        first_name:
+          type: string
+          maxLength: 255
+        last_name:
+          type: string
+          maxLength: 255
+        image:
+          type: string
+          format: uri
+          nullable: true
+        username:
+          type: string
+          readOnly: true
+        email:
+          type: string
+          readOnly: true
+        user_type:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - email
+      - first_name
+      - id
+      - last_name
+      - updated_at
+      - user
+      - user_type
+      - username
+    UserProfileRequest:
+      type: object
+      properties:
+        first_name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        last_name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        image:
+          type: string
+          format: binary
+          nullable: true
+      required:
+      - first_name
+      - last_name
+    UserTypeEnum:
+      enum:
+      - user
+      - admin
+      - super_admin
+      type: string
+      description: |-
+        * `user` - User
+        * `admin` - Admin
+        * `super_admin` - Super Admin
+    UserUpdateRequestRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          minLength: 1
+          description: Username
+        email:
+          type: string
+          format: email
+          minLength: 1
+          description: Email address
+        user_type:
+          type: string
+          minLength: 1
+          description: User type
+        is_active:
+          type: boolean
+          description: Account active status
+        organization:
+          type: integer
+          description: Organization ID
+        role:
+          type: integer
+          description: Role ID
+        profile:
+          $ref: '#/components/schemas/ProfileUpdateRequestRequest'
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

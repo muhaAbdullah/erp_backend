@@ -1,4 +1,5 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 from apps.core.views import (
     UserDetailView,
     RegistrationView,
@@ -9,20 +10,34 @@ from apps.core.views import (
     AccountStatusAPIView,
     AccountActivationAPIView,
     ResendActivationAPIView,
+    OrganizationViewSet,
+    RoleViewSet,
+    PermissionViewSet,
+    AdminUserViewSet,
+    AuditLogViewSet,
+    CustomTokenObtainPairView,
 )
 from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
     TokenRefreshView,
     TokenVerifyView,
 )
 from drf_spectacular.utils import extend_schema
 
+
+# Create router for ViewSets
+router = DefaultRouter()
+router.register(r'organizations', OrganizationViewSet, basename='organization')
+router.register(r'roles', RoleViewSet, basename='role')
+router.register(r'permissions', PermissionViewSet, basename='permission')
+router.register(r'users', AdminUserViewSet, basename='admin-users')
+router.register(r'audit-logs', AuditLogViewSet, basename='auditlog')
+
 # Tag simplejwt built-in views so they appear correctly in the docs.
-TokenObtainPairView = extend_schema(
+CustomTokenObtainPairView = extend_schema(
     tags=['Auth'],
     summary='Login',
-    description='Authenticates a user with email and password, returns an access and refresh JWT token pair.',
-)(TokenObtainPairView)
+    description='Authenticates a user with email and password, returns an access and refresh JWT token pair. Logs the login action.',
+)(CustomTokenObtainPairView)
 
 TokenRefreshView = extend_schema(
     tags=['Auth'],
@@ -41,7 +56,7 @@ urlpatterns = [
     path('register/', RegistrationView.as_view(), name='register'),
     path('account-activation/<secret_key>', AccountActivationAPIView.as_view(), name='account-activation'),
     path('resend-activation/', ResendActivationAPIView.as_view(), name='resend-activation'),
-    path('login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('login/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('me/', UserDetailView.as_view(), name='user'),
     path('forget-password/', ForgetPasswordView.as_view(), name='forget_password'),
     path('token-refresh/', TokenRefreshView.as_view(), name='token_refresh'),
@@ -50,4 +65,7 @@ urlpatterns = [
     path('email-exist/', EmailExistAPIView.as_view(), name='email-exist'),
     path('account-status/', AccountStatusAPIView.as_view(), name='account-status'),
     path('change-password/', ChangePasswordView.as_view(), name='change-password'),
+    
+    # Include RBAC router URLs
+    path('', include(router.urls)),
 ]

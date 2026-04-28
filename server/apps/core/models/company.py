@@ -1,8 +1,8 @@
 from django.db import models
-from coresite.mixin import AbstractTimeStampModel
+from coresite.mixin import BaseModel
 
 
-class CompanyInfo(AbstractTimeStampModel):
+class CompanyInfo(BaseModel):
     """ Company Info Model for emails templates"""
     company_logo = models.ImageField(upload_to='company_logo')
     company_name = models.CharField(max_length=255)

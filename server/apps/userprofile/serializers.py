@@ -10,6 +10,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserProfile
-        fields = '__all__'
-        read_only_fields = ('user', 'created_at', 'updated_at')
+        fields = ['id', 'user', 'first_name', 'last_name', 'image',
+                  'username', 'email', 'user_type', 'created_at', 'updated_at']
+        read_only_fields = ('user', 'username', 'email', 'user_type', 'created_at', 'updated_at')
 

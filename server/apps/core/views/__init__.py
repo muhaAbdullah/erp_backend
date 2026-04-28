@@ -7,3 +7,9 @@ from .reset_password import ResetPasswordAPIView
 from .accountstatus import AccountStatusAPIView
 from .accountactivation import AccountActivationAPIView
 from .resend_activation import ResendActivationAPIView
+from .organization import OrganizationViewSet
+from .role import RoleViewSet
+from .permission import PermissionViewSet
+from .admin_user import AdminUserViewSet
+from .auditlog import AuditLogViewSet
+from .login import CustomTokenObtainPairView

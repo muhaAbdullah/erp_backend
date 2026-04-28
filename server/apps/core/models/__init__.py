@@ -2,3 +2,8 @@ from .user import User
 from .forgetpassword import ForgetPassword
 from .useractivation import UserActivation
 from .company import CompanyInfo
+from .organization import Organization
+from .permission import Permission
+from .role import Role
+from .rolepermission import RolePermission
+from .auditlog import AuditLog

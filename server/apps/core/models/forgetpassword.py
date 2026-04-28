@@ -1,12 +1,12 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-from coresite.mixin import AbstractTimeStampModel
+from coresite.mixin import BaseModel
 
 
 User = get_user_model()
 
 
-class ForgetPassword(AbstractTimeStampModel):
+class ForgetPassword(BaseModel):
     """
     Here you can reset your password in case you lost your password
     """

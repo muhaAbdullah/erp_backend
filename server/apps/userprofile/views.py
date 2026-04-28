@@ -1,5 +1,9 @@
-from rest_framework import viewsets, filters
-from rest_framework.permissions import AllowAny
+"""
+User profile viewset with RBAC and tenant isolation.
+"""
+from rest_framework import viewsets, filters, status
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 from .models import UserProfile
 from utils.paginations.pagination import LimitOffsetPagination
 from django_filters import rest_framework as backend_filters
@@ -67,19 +71,58 @@ from drf_spectacular.types import OpenApiTypes
     ),
 )
 class UserProfileViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for user profiles with simplified access control.
+    
+    Regular users can only view/update their own profile.
+    Super admins can access all profiles.
+    """
     pagination_class = LimitOffsetPagination
+    permission_classes = [IsAuthenticated]
     filter_backends = [
         backend_filters.DjangoFilterBackend,
         filters.SearchFilter,
     ]
     filterset_class = UserProfileFilter
-    search_fields = ['first_name', 'last_name', 'user__username']
-    queryset = UserProfile.objects.all()
+    search_fields = ['first_name', 'last_name', 'user__username', 'user__email']
     serializer_class = UserProfileSerializer
     lookup_field = 'user__username'
     lookup_url_kwarg = 'username'
 
     def get_queryset(self):
-        if self.action in ('list', 'retrieve'):
-            return self.queryset.filter(user__is_active=True)
-        return self.queryset.filter(user__is_active=True, user=self.request.user)
+        """
+        Filter queryset based on user type.
+        Super admins see all profiles, regular users see only their own.
+        """
+        # Super admin sees all profiles
+        if self.request.user.is_super_admin:
+            return UserProfile.objects.all()
+        
+        # Regular users see only their own profile
+        return UserProfile.objects.filter(user=self.request.user)
+    
+    def list(self, request, *args, **kwargs):
+        """
+        For normal users, return their profile directly (not a list).
+        For super admins, return the full list.
+        """
+        # Normal users get their own profile, not a list
+        if not request.user.is_super_admin:
+            try:
+                profile = UserProfile.objects.get(user=request.user)
+                serializer = self.get_serializer(profile)
+                return Response(serializer.data)
+            except UserProfile.DoesNotExist:
+                return Response(
+                    {"detail": "Profile not found. Please create one."},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+        
+        # Super admin gets full list
+        return super().list(request, *args, **kwargs)
+    
+    def perform_create(self, serializer):
+        """
+        Always assign profile to the logged-in user.
+        """
+        serializer.save(user=self.request.user)

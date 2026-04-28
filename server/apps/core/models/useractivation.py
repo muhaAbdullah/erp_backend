@@ -1,11 +1,11 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-from coresite.mixin import AbstractTimeStampModel
+from coresite.mixin import BaseModel
 
 User = get_user_model()
 
 
-class UserActivation(AbstractTimeStampModel):
+class UserActivation(BaseModel):
     """
     Here you can activate your account
     """
