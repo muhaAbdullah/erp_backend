@@ -1,0 +1,66 @@
+"""
+Serializer for EmployeePersonal model.
+"""
+from rest_framework import serializers
+from apps.hrm.models import EmployeePersonal, Religion, Qualification, Employee
+
+
+class EmployeePersonalSerializer(serializers.ModelSerializer):
+    """
+    Serializer for EmployeePersonal model.
+    Links to employee with validation for same organization.
+    """
+    employee = serializers.PrimaryKeyRelatedField(
+        write_only=True,
+        queryset=Employee.objects.none()
+    )
+    religion = serializers.PrimaryKeyRelatedField(
+        queryset=Religion.objects.filter(is_active=True),
+        required=False,
+        allow_null=True
+    )
+    qualification = serializers.PrimaryKeyRelatedField(
+        queryset=Qualification.objects.filter(is_active=True),
+        required=False,
+        allow_null=True
+    )
+    
+    # Read-only nested representations
+    religion_name = serializers.CharField(source='religion.name', read_only=True)
+    qualification_name = serializers.CharField(source='qualification.name', read_only=True)
+    
+    class Meta:
+        model = EmployeePersonal
+        fields = [
+            'id', 'employee', 'father_name', 'mother_name',
+            'marital_status', 'blood_group', 'nationality',
+            'religion', 'religion_name',
+            'qualification', 'qualification_name',
+            'created_at', 'updated_at'
+        ]
+        read_only_fields = ['id', 'created_at', 'updated_at']
+    
+    def __init__(self, *args, **kwargs):
+        """Set employee queryset based on request user's organization."""
+        super().__init__(*args, **kwargs)
+        request = self.context.get('request')
+        if request and hasattr(request, 'user') and hasattr(request.user, 'is_super_admin'):
+            if request.user.is_super_admin:
+                self.fields['employee'].queryset = Employee.objects.all()
+            elif request.user.organization:
+                self.fields['employee'].queryset = Employee.objects.filter(
+                    organization=request.user.organization
+                )
+            else:
+                self.fields['employee'].queryset = Employee.objects.none()
+    
+    def validate_employee(self, value):
+        """Ensure employee belongs to user's organization."""
+        request = self.context.get('request')
+        if request and hasattr(request, 'user') and hasattr(request.user, 'is_super_admin'):
+            if not request.user.is_super_admin:
+                if value.organization != request.user.organization:
+                    raise serializers.ValidationError(
+                        "Employee must belong to your organization"
+                    )
+        return value

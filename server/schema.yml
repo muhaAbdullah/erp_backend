@@ -4,6 +4,1976 @@ info:
   version: 1.0.0
   description: REST API for user authentication and profile management.
 paths:
+  /api/hrm/departments/:
+    get:
+      operationId: hrm_departments_list
+      description: Get list of departments in user's organization.
+      summary: List departments
+      parameters:
+      - in: query
+        name: is_active
+        schema:
+          type: boolean
+      tags:
+      - HRM - Master Data
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Department'
+          description: ''
+    post:
+      operationId: hrm_departments_create
+      description: |-
+        ViewSet for managing departments.
+
+        Features:
+        - Auto-assign organization from logged-in user
+        - Permission-based access control (manage_hrm_masters or super admin)
+        - Tenant filtering
+        - Audit logging
+      summary: Create department
+      tags:
+      - HRM - Master Data
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DepartmentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DepartmentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DepartmentRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Department'
+          description: ''
+        '400':
+          description: Validation error
+  /api/hrm/departments/{id}/:
+    get:
+      operationId: hrm_departments_retrieve
+      description: |-
+        ViewSet for managing departments.
+
+        Features:
+        - Auto-assign organization from logged-in user
+        - Permission-based access control (manage_hrm_masters or super admin)
+        - Tenant filtering
+        - Audit logging
+      summary: Retrieve department
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Department.
+        required: true
+      tags:
+      - HRM - Master Data
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Department'
+          description: ''
+        '404':
+          description: Not found
+    put:
+      operationId: hrm_departments_update
+      description: |-
+        ViewSet for managing departments.
+
+        Features:
+        - Auto-assign organization from logged-in user
+        - Permission-based access control (manage_hrm_masters or super admin)
+        - Tenant filtering
+        - Audit logging
+      summary: Update department
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Department.
+        required: true
+      tags:
+      - HRM - Master Data
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DepartmentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DepartmentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DepartmentRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Department'
+          description: ''
+        '400':
+          description: Validation error
+    patch:
+      operationId: hrm_departments_partial_update
+      description: |-
+        ViewSet for managing departments.
+
+        Features:
+        - Auto-assign organization from logged-in user
+        - Permission-based access control (manage_hrm_masters or super admin)
+        - Tenant filtering
+        - Audit logging
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Department.
+        required: true
+      tags:
+      - hrm
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedDepartmentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedDepartmentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedDepartmentRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Department'
+          description: ''
+    delete:
+      operationId: hrm_departments_destroy
+      description: |-
+        ViewSet for managing departments.
+
+        Features:
+        - Auto-assign organization from logged-in user
+        - Permission-based access control (manage_hrm_masters or super admin)
+        - Tenant filtering
+        - Audit logging
+      summary: Delete department
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Department.
+        required: true
+      tags:
+      - HRM - Master Data
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: Deleted
+  /api/hrm/designations/:
+    get:
+      operationId: hrm_designations_list
+      description: ViewSet for managing designations.
+      summary: List designations
+      parameters:
+      - in: query
+        name: is_active
+        schema:
+          type: boolean
+      tags:
+      - HRM - Master Data
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Designation'
+          description: ''
+    post:
+      operationId: hrm_designations_create
+      description: ViewSet for managing designations.
+      summary: Create designation
+      tags:
+      - HRM - Master Data
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DesignationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DesignationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DesignationRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Designation'
+          description: ''
+  /api/hrm/designations/{id}/:
+    get:
+      operationId: hrm_designations_retrieve
+      description: ViewSet for managing designations.
+      summary: Retrieve designation
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Designation.
+        required: true
+      tags:
+      - HRM - Master Data
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Designation'
+          description: ''
+    put:
+      operationId: hrm_designations_update
+      description: ViewSet for managing designations.
+      summary: Update designation
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Designation.
+        required: true
+      tags:
+      - HRM - Master Data
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DesignationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DesignationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DesignationRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Designation'
+          description: ''
+    patch:
+      operationId: hrm_designations_partial_update
+      description: ViewSet for managing designations.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Designation.
+        required: true
+      tags:
+      - hrm
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedDesignationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedDesignationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedDesignationRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Designation'
+          description: ''
+    delete:
+      operationId: hrm_designations_destroy
+      description: ViewSet for managing designations.
+      summary: Delete designation
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Designation.
+        required: true
+      tags:
+      - HRM - Master Data
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/hrm/employee-contact/:
+    get:
+      operationId: hrm_employee_contact_list
+      description: Get list of employee contact information records.
+      summary: List employee contact information
+      tags:
+      - HRM - Employee Contact
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EmployeeContact'
+          description: ''
+    post:
+      operationId: hrm_employee_contact_create
+      description: Create contact information record for an employee.
+      summary: Create employee contact information
+      tags:
+      - HRM - Employee Contact
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeContactRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EmployeeContactRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EmployeeContactRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeContact'
+          description: ''
+        '400':
+          description: Validation error
+  /api/hrm/employee-contact/{id}/:
+    get:
+      operationId: hrm_employee_contact_retrieve
+      description: Get detailed contact information for a specific employee.
+      summary: Retrieve employee contact information
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Employee Contact Information.
+        required: true
+      tags:
+      - HRM - Employee Contact
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeContact'
+          description: ''
+        '404':
+          description: Record not found
+    put:
+      operationId: hrm_employee_contact_update
+      description: Update contact information record.
+      summary: Update employee contact information
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Employee Contact Information.
+        required: true
+      tags:
+      - HRM - Employee Contact
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeContactRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EmployeeContactRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EmployeeContactRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeContact'
+          description: ''
+        '400':
+          description: Validation error
+        '404':
+          description: Record not found
+    patch:
+      operationId: hrm_employee_contact_partial_update
+      description: Partially update contact information record.
+      summary: Partial update employee contact information
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Employee Contact Information.
+        required: true
+      tags:
+      - HRM - Employee Contact
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedEmployeeContactRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedEmployeeContactRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedEmployeeContactRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeContact'
+          description: ''
+        '400':
+          description: Validation error
+        '404':
+          description: Record not found
+    delete:
+      operationId: hrm_employee_contact_destroy
+      description: Delete contact information record.
+      summary: Delete employee contact information
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Employee Contact Information.
+        required: true
+      tags:
+      - HRM - Employee Contact
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: Record deleted successfully
+        '404':
+          description: Record not found
+  /api/hrm/employee-government/:
+    get:
+      operationId: hrm_employee_government_list
+      description: Get list of employee government information records.
+      summary: List employee government information
+      tags:
+      - HRM - Employee Government
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EmployeeGovernment'
+          description: ''
+    post:
+      operationId: hrm_employee_government_create
+      description: Create government information record for an employee.
+      summary: Create employee government information
+      tags:
+      - HRM - Employee Government
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeGovernmentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EmployeeGovernmentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EmployeeGovernmentRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeGovernment'
+          description: ''
+        '400':
+          description: Validation error
+  /api/hrm/employee-government/{id}/:
+    get:
+      operationId: hrm_employee_government_retrieve
+      description: Get detailed government information for a specific employee.
+      summary: Retrieve employee government information
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Employee Government Information.
+        required: true
+      tags:
+      - HRM - Employee Government
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeGovernment'
+          description: ''
+        '404':
+          description: Record not found
+    put:
+      operationId: hrm_employee_government_update
+      description: Update government information record.
+      summary: Update employee government information
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Employee Government Information.
+        required: true
+      tags:
+      - HRM - Employee Government
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeGovernmentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EmployeeGovernmentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EmployeeGovernmentRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeGovernment'
+          description: ''
+        '400':
+          description: Validation error
+        '404':
+          description: Record not found
+    patch:
+      operationId: hrm_employee_government_partial_update
+      description: Partially update government information record.
+      summary: Partial update employee government information
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Employee Government Information.
+        required: true
+      tags:
+      - HRM - Employee Government
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedEmployeeGovernmentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedEmployeeGovernmentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedEmployeeGovernmentRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeGovernment'
+          description: ''
+        '400':
+          description: Validation error
+        '404':
+          description: Record not found
+    delete:
+      operationId: hrm_employee_government_destroy
+      description: Delete government information record.
+      summary: Delete employee government information
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Employee Government Information.
+        required: true
+      tags:
+      - HRM - Employee Government
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: Record deleted successfully
+        '404':
+          description: Record not found
+  /api/hrm/employee-personal/:
+    get:
+      operationId: hrm_employee_personal_list
+      description: Get list of employee personal information records.
+      summary: List employee personal information
+      tags:
+      - HRM - Employee Personal
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EmployeePersonal'
+          description: ''
+    post:
+      operationId: hrm_employee_personal_create
+      description: Create personal information record for an employee.
+      summary: Create employee personal information
+      tags:
+      - HRM - Employee Personal
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeePersonalRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EmployeePersonalRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EmployeePersonalRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeePersonal'
+          description: ''
+        '400':
+          description: Validation error
+  /api/hrm/employee-personal/{id}/:
+    get:
+      operationId: hrm_employee_personal_retrieve
+      description: Get detailed personal information for a specific employee.
+      summary: Retrieve employee personal information
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Employee Personal Information.
+        required: true
+      tags:
+      - HRM - Employee Personal
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeePersonal'
+          description: ''
+        '404':
+          description: Record not found
+    put:
+      operationId: hrm_employee_personal_update
+      description: Update personal information record.
+      summary: Update employee personal information
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Employee Personal Information.
+        required: true
+      tags:
+      - HRM - Employee Personal
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeePersonalRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EmployeePersonalRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EmployeePersonalRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeePersonal'
+          description: ''
+        '400':
+          description: Validation error
+        '404':
+          description: Record not found
+    patch:
+      operationId: hrm_employee_personal_partial_update
+      description: Partially update personal information record.
+      summary: Partial update employee personal information
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Employee Personal Information.
+        required: true
+      tags:
+      - HRM - Employee Personal
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedEmployeePersonalRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedEmployeePersonalRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedEmployeePersonalRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeePersonal'
+          description: ''
+        '400':
+          description: Validation error
+        '404':
+          description: Record not found
+    delete:
+      operationId: hrm_employee_personal_destroy
+      description: Delete personal information record.
+      summary: Delete employee personal information
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Employee Personal Information.
+        required: true
+      tags:
+      - HRM - Employee Personal
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: Record deleted successfully
+        '404':
+          description: Record not found
+  /api/hrm/employee-types/:
+    get:
+      operationId: hrm_employee_types_list
+      description: ViewSet for managing employee types.
+      summary: List employee types
+      parameters:
+      - in: query
+        name: is_active
+        schema:
+          type: boolean
+      tags:
+      - HRM - Master Data
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EmployeeType'
+          description: ''
+    post:
+      operationId: hrm_employee_types_create
+      description: ViewSet for managing employee types.
+      summary: Create employee type
+      tags:
+      - HRM - Master Data
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeTypeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EmployeeTypeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EmployeeTypeRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeType'
+          description: ''
+  /api/hrm/employee-types/{id}/:
+    get:
+      operationId: hrm_employee_types_retrieve
+      description: ViewSet for managing employee types.
+      summary: Retrieve employee type
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Employee Type.
+        required: true
+      tags:
+      - HRM - Master Data
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeType'
+          description: ''
+    put:
+      operationId: hrm_employee_types_update
+      description: ViewSet for managing employee types.
+      summary: Update employee type
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Employee Type.
+        required: true
+      tags:
+      - HRM - Master Data
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeTypeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EmployeeTypeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EmployeeTypeRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeType'
+          description: ''
+    patch:
+      operationId: hrm_employee_types_partial_update
+      description: ViewSet for managing employee types.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Employee Type.
+        required: true
+      tags:
+      - hrm
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedEmployeeTypeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedEmployeeTypeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedEmployeeTypeRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeType'
+          description: ''
+    delete:
+      operationId: hrm_employee_types_destroy
+      description: ViewSet for managing employee types.
+      summary: Delete employee type
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Employee Type.
+        required: true
+      tags:
+      - HRM - Master Data
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/hrm/employees/:
+    get:
+      operationId: hrm_employees_list
+      description: Get list of employees in user's organization with filtering and
+        search.
+      summary: List all employees
+      parameters:
+      - in: query
+        name: department
+        schema:
+          type: integer
+        description: Filter by department ID
+      - in: query
+        name: designation
+        schema:
+          type: integer
+        description: Filter by designation ID
+      - in: query
+        name: employment_status
+        schema:
+          type: string
+        description: Filter by employment status
+      - in: query
+        name: is_active
+        schema:
+          type: boolean
+        description: Filter by active status
+      - in: query
+        name: search
+        schema:
+          type: string
+        description: Search by code, name
+      tags:
+      - HRM - Employees
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EmployeeList'
+          description: ''
+    post:
+      operationId: hrm_employees_create
+      description: Create a new employee record in user's organization.
+      summary: Create new employee
+      tags:
+      - HRM - Employees
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EmployeeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EmployeeRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+          description: ''
+        '400':
+          description: Validation error
+        '403':
+          description: Permission denied
+  /api/hrm/employees/{id}/:
+    get:
+      operationId: hrm_employees_retrieve
+      description: Get detailed information about a specific employee including nested
+        data.
+      summary: Retrieve employee details
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Employee.
+        required: true
+      tags:
+      - HRM - Employees
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+          description: ''
+        '404':
+          description: Employee not found
+    put:
+      operationId: hrm_employees_update
+      description: Update an existing employee record.
+      summary: Update employee
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Employee.
+        required: true
+      tags:
+      - HRM - Employees
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EmployeeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EmployeeRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+          description: ''
+        '400':
+          description: Validation error
+        '403':
+          description: Permission denied
+        '404':
+          description: Employee not found
+    patch:
+      operationId: hrm_employees_partial_update
+      description: Partially update an employee record.
+      summary: Partial update employee
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Employee.
+        required: true
+      tags:
+      - HRM - Employees
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedEmployeeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedEmployeeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedEmployeeRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+          description: ''
+        '400':
+          description: Validation error
+        '403':
+          description: Permission denied
+        '404':
+          description: Employee not found
+    delete:
+      operationId: hrm_employees_destroy
+      description: Delete an employee record.
+      summary: Delete employee
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Employee.
+        required: true
+      tags:
+      - HRM - Employees
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: Employee deleted successfully
+        '403':
+          description: Permission denied
+        '404':
+          description: Employee not found
+  /api/hrm/employees/{id}/activate/:
+    post:
+      operationId: hrm_employees_activate_create
+      description: Activate an employee (set is_active=True).
+      summary: Activate employee
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Employee.
+        required: true
+      tags:
+      - HRM - Employees
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EmployeeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EmployeeRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: Employee activated successfully
+        '404':
+          description: Employee not found
+  /api/hrm/employees/{id}/deactivate/:
+    post:
+      operationId: hrm_employees_deactivate_create
+      description: Deactivate an employee (set is_active=False).
+      summary: Deactivate employee
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Employee.
+        required: true
+      tags:
+      - HRM - Employees
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EmployeeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EmployeeRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: Employee deactivated successfully
+        '404':
+          description: Employee not found
+  /api/hrm/qualifications/:
+    get:
+      operationId: hrm_qualifications_list
+      description: Get list of qualifications (super admin only).
+      summary: List qualifications
+      parameters:
+      - in: query
+        name: is_active
+        schema:
+          type: boolean
+      tags:
+      - HRM - Global Master Data
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Qualification'
+          description: ''
+    post:
+      operationId: hrm_qualifications_create
+      description: Create a new qualification (super admin only).
+      summary: Create qualification
+      tags:
+      - HRM - Global Master Data
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QualificationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/QualificationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/QualificationRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Qualification'
+          description: ''
+        '400':
+          description: Validation error
+  /api/hrm/qualifications/{id}/:
+    get:
+      operationId: hrm_qualifications_retrieve
+      description: |-
+        ViewSet for managing qualifications (global master data).
+
+        Features:
+        - Super admin only access
+        - Global data (no organization)
+        - Audit logging
+      summary: Retrieve qualification
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Qualification.
+        required: true
+      tags:
+      - HRM - Global Master Data
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Qualification'
+          description: ''
+        '404':
+          description: Not found
+    put:
+      operationId: hrm_qualifications_update
+      description: |-
+        ViewSet for managing qualifications (global master data).
+
+        Features:
+        - Super admin only access
+        - Global data (no organization)
+        - Audit logging
+      summary: Update qualification
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Qualification.
+        required: true
+      tags:
+      - HRM - Global Master Data
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QualificationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/QualificationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/QualificationRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Qualification'
+          description: ''
+        '400':
+          description: Validation error
+    patch:
+      operationId: hrm_qualifications_partial_update
+      description: |-
+        ViewSet for managing qualifications (global master data).
+
+        Features:
+        - Super admin only access
+        - Global data (no organization)
+        - Audit logging
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Qualification.
+        required: true
+      tags:
+      - hrm
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedQualificationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedQualificationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedQualificationRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Qualification'
+          description: ''
+    delete:
+      operationId: hrm_qualifications_destroy
+      description: |-
+        ViewSet for managing qualifications (global master data).
+
+        Features:
+        - Super admin only access
+        - Global data (no organization)
+        - Audit logging
+      summary: Delete qualification
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Qualification.
+        required: true
+      tags:
+      - HRM - Global Master Data
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: Deleted
+  /api/hrm/religions/:
+    get:
+      operationId: hrm_religions_list
+      description: Get list of religions (super admin only).
+      summary: List religions
+      parameters:
+      - in: query
+        name: is_active
+        schema:
+          type: boolean
+      tags:
+      - HRM - Global Master Data
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Religion'
+          description: ''
+    post:
+      operationId: hrm_religions_create
+      description: Create a new religion (super admin only).
+      summary: Create religion
+      tags:
+      - HRM - Global Master Data
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReligionRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ReligionRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ReligionRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Religion'
+          description: ''
+        '400':
+          description: Validation error
+  /api/hrm/religions/{id}/:
+    get:
+      operationId: hrm_religions_retrieve
+      description: |-
+        ViewSet for managing religions (global master data).
+
+        Features:
+        - Super admin only access
+        - Global data (no organization)
+        - Audit logging
+      summary: Retrieve religion
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Religion.
+        required: true
+      tags:
+      - HRM - Global Master Data
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Religion'
+          description: ''
+        '404':
+          description: Not found
+    put:
+      operationId: hrm_religions_update
+      description: |-
+        ViewSet for managing religions (global master data).
+
+        Features:
+        - Super admin only access
+        - Global data (no organization)
+        - Audit logging
+      summary: Update religion
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Religion.
+        required: true
+      tags:
+      - HRM - Global Master Data
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReligionRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ReligionRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ReligionRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Religion'
+          description: ''
+        '400':
+          description: Validation error
+    patch:
+      operationId: hrm_religions_partial_update
+      description: |-
+        ViewSet for managing religions (global master data).
+
+        Features:
+        - Super admin only access
+        - Global data (no organization)
+        - Audit logging
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Religion.
+        required: true
+      tags:
+      - hrm
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedReligionRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedReligionRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedReligionRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Religion'
+          description: ''
+    delete:
+      operationId: hrm_religions_destroy
+      description: |-
+        ViewSet for managing religions (global master data).
+
+        Features:
+        - Super admin only access
+        - Global data (no organization)
+        - Audit logging
+      summary: Delete religion
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Religion.
+        required: true
+      tags:
+      - HRM - Global Master Data
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: Deleted
+  /api/hrm/scale-categories/:
+    get:
+      operationId: hrm_scale_categories_list
+      description: ViewSet for managing scale categories.
+      summary: List scale categories
+      parameters:
+      - in: query
+        name: is_active
+        schema:
+          type: boolean
+      tags:
+      - HRM - Master Data
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ScaleCategory'
+          description: ''
+    post:
+      operationId: hrm_scale_categories_create
+      description: ViewSet for managing scale categories.
+      summary: Create scale category
+      tags:
+      - HRM - Master Data
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScaleCategoryRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ScaleCategoryRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ScaleCategoryRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScaleCategory'
+          description: ''
+  /api/hrm/scale-categories/{id}/:
+    get:
+      operationId: hrm_scale_categories_retrieve
+      description: ViewSet for managing scale categories.
+      summary: Retrieve scale category
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Scale Category.
+        required: true
+      tags:
+      - HRM - Master Data
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScaleCategory'
+          description: ''
+    put:
+      operationId: hrm_scale_categories_update
+      description: ViewSet for managing scale categories.
+      summary: Update scale category
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Scale Category.
+        required: true
+      tags:
+      - HRM - Master Data
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScaleCategoryRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ScaleCategoryRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ScaleCategoryRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScaleCategory'
+          description: ''
+    patch:
+      operationId: hrm_scale_categories_partial_update
+      description: ViewSet for managing scale categories.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Scale Category.
+        required: true
+      tags:
+      - hrm
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedScaleCategoryRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedScaleCategoryRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedScaleCategoryRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScaleCategory'
+          description: ''
+    delete:
+      operationId: hrm_scale_categories_destroy
+      description: ViewSet for managing scale categories.
+      summary: Delete scale category
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Scale Category.
+        required: true
+      tags:
+      - HRM - Master Data
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/hrm/shifts/:
+    get:
+      operationId: hrm_shifts_list
+      description: ViewSet for managing shifts.
+      summary: List shifts
+      parameters:
+      - in: query
+        name: is_active
+        schema:
+          type: boolean
+      tags:
+      - HRM - Master Data
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Shift'
+          description: ''
+    post:
+      operationId: hrm_shifts_create
+      description: ViewSet for managing shifts.
+      summary: Create shift
+      tags:
+      - HRM - Master Data
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShiftRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ShiftRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ShiftRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shift'
+          description: ''
+  /api/hrm/shifts/{id}/:
+    get:
+      operationId: hrm_shifts_retrieve
+      description: ViewSet for managing shifts.
+      summary: Retrieve shift
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Shift.
+        required: true
+      tags:
+      - HRM - Master Data
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shift'
+          description: ''
+    put:
+      operationId: hrm_shifts_update
+      description: ViewSet for managing shifts.
+      summary: Update shift
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Shift.
+        required: true
+      tags:
+      - HRM - Master Data
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShiftRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ShiftRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ShiftRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shift'
+          description: ''
+    patch:
+      operationId: hrm_shifts_partial_update
+      description: ViewSet for managing shifts.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Shift.
+        required: true
+      tags:
+      - hrm
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedShiftRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedShiftRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedShiftRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shift'
+          description: ''
+    delete:
+      operationId: hrm_shifts_destroy
+      description: ViewSet for managing shifts.
+      summary: Delete shift
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Shift.
+        required: true
+      tags:
+      - HRM - Master Data
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/user-profile/user-profile/:
     get:
       operationId: user_profile_user_profile_list
@@ -42,14 +2012,6 @@ paths:
         schema:
           type: boolean
         description: Filter by account active status.
-      - in: query
-        name: user__is_staff
-        schema:
-          type: boolean
-      - in: query
-        name: user__is_superuser
-        schema:
-          type: boolean
       - in: query
         name: user__user_type
         schema:
@@ -265,6 +2227,74 @@ paths:
           description: User not found.
         '500':
           description: Internal server error.
+  /api/user/audit-logs/:
+    get:
+      operationId: user_audit_logs_list
+      description: View audit logs. Super admins see all logs, regular users see only
+        their organization's logs.
+      summary: List Audit Logs
+      parameters:
+      - in: query
+        name: action
+        schema:
+          type: string
+        description: Filter by action type
+      - in: query
+        name: model_name
+        schema:
+          type: string
+        description: Filter by model name
+      - in: query
+        name: search
+        schema:
+          type: string
+        description: Search by model name or user email/username
+      - in: query
+        name: user
+        schema:
+          type: integer
+        description: Filter by user ID
+      tags:
+      - Audit Logs
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AuditLog'
+          description: ''
+        '401':
+          description: Authentication required
+  /api/user/audit-logs/{id}/:
+    get:
+      operationId: user_audit_logs_retrieve
+      description: Get details of a specific audit log entry.
+      summary: Retrieve Audit Log
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - Audit Logs
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditLog'
+          description: ''
+        '401':
+          description: Authentication required
+        '404':
+          description: Audit log not found
   /api/user/change-password/:
     put:
       operationId: user_change_password_update
@@ -315,41 +2345,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ChangePassword'
           description: ''
-  /api/user/create-user/:
-    post:
-      operationId: user_create_user_create
-      description: Create a new user. Super admin must provide organization_id, org
-        admin creates in their own organization.
-      summary: Create User (Admin Only)
-      tags:
-      - User Management
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AdminCreateUserRequestRequest'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/AdminCreateUserRequestRequest'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/AdminCreateUserRequestRequest'
-        required: true
-      security:
-      - jwtAuth: []
-      responses:
-        '201':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AdminCreateUserSuccess'
-          description: User created successfully
-        '400':
-          description: Validation error
-        '403':
-          description: Permission denied
-        '404':
-          description: Organization or Role not found
   /api/user/email-exist/:
     post:
       operationId: user_email_exist_create
@@ -420,7 +2415,7 @@ paths:
     post:
       operationId: user_login_create
       description: Authenticates a user with email and password, returns an access
-        and refresh JWT token pair.
+        and refresh JWT token pair. Logs the login action.
       summary: Login
       tags:
       - Auth
@@ -1541,6 +3536,39 @@ paths:
           description: Permission denied
         '404':
           description: User not found
+  /api/user/users/create_super_admin/:
+    post:
+      operationId: user_users_create_super_admin_create
+      description: Create a new super admin user. Only existing super admins can use
+        this endpoint.
+      summary: Create Super Admin
+      tags:
+      - User Management
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSuperAdminRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreateSuperAdminRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreateSuperAdminRequestRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateSuperAdminSuccess'
+          description: Super admin created successfully
+        '400':
+          description: Validation error
+        '403':
+          description: Only super admins can create super admins
 components:
   schemas:
     AccountStatusRequestRequest:
@@ -1565,6 +3593,24 @@ components:
       - message
       - status
       - user_type
+    ActionEnum:
+      enum:
+      - CREATE
+      - UPDATE
+      - DELETE
+      - LOGIN
+      - LOGOUT
+      - ASSIGN_PERMISSION
+      - REMOVE_PERMISSION
+      type: string
+      description: |-
+        * `CREATE` - Create
+        * `UPDATE` - Update
+        * `DELETE` - Delete
+        * `LOGIN` - Login
+        * `LOGOUT` - Logout
+        * `ASSIGN_PERMISSION` - Assign Permission
+        * `REMOVE_PERMISSION` - Remove Permission
     ActivationSuccess:
       type: object
       properties:
@@ -1646,6 +3692,117 @@ components:
       required:
       - permission_ids
       - role_id
+    AuditLog:
+      type: object
+      description: Read-only serializer for audit logs.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        user:
+          type: integer
+          readOnly: true
+          nullable: true
+          description: User who performed the action
+        user_email:
+          type: string
+          format: email
+          readOnly: true
+          nullable: true
+        user_name:
+          type: string
+          readOnly: true
+          nullable: true
+        organization:
+          type: integer
+          readOnly: true
+          nullable: true
+          description: Organization this record belongs to
+        organization_name:
+          type: string
+          readOnly: true
+          nullable: true
+        action:
+          allOf:
+          - $ref: '#/components/schemas/ActionEnum'
+          readOnly: true
+          description: |-
+            Type of action performed
+
+            * `CREATE` - Create
+            * `UPDATE` - Update
+            * `DELETE` - Delete
+            * `LOGIN` - Login
+            * `LOGOUT` - Logout
+            * `ASSIGN_PERMISSION` - Assign Permission
+            * `REMOVE_PERMISSION` - Remove Permission
+        action_display:
+          type: string
+          readOnly: true
+        model_name:
+          type: string
+          readOnly: true
+          description: Name of the model affected (e.g., User, Role, Organization)
+        object_id:
+          type: string
+          readOnly: true
+          nullable: true
+          description: ID of the affected object
+        changes:
+          readOnly: true
+          description: JSON object storing before/after changes
+        ip_address:
+          type: string
+          readOnly: true
+          nullable: true
+          description: IP address of the client
+        user_agent:
+          type: string
+          readOnly: true
+          nullable: true
+          description: Browser/client user agent string
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - action
+      - action_display
+      - changes
+      - created_at
+      - id
+      - ip_address
+      - model_name
+      - object_id
+      - organization
+      - organization_name
+      - user
+      - user_agent
+      - user_email
+      - user_name
+    BlankEnum:
+      enum:
+      - ''
+    BloodGroupEnum:
+      enum:
+      - A+
+      - A-
+      - B+
+      - B-
+      - O+
+      - O-
+      - AB+
+      - AB-
+      type: string
+      description: |-
+        * `A+` - A+
+        * `A-` - A-
+        * `B+` - B+
+        * `B-` - B-
+        * `O+` - O+
+        * `O-` - O-
+        * `AB+` - AB+
+        * `AB-` - AB-
     ChangePassword:
       type: object
       description: Serializer for password change endpoint.
@@ -1670,6 +3827,162 @@ components:
       required:
       - new_password
       - old_password
+    CreateSuperAdminRequestRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+          description: Super admin email address
+        username:
+          type: string
+          minLength: 1
+          description: Unique username
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+          description: Super admin password
+      required:
+      - email
+      - password
+      - username
+    CreateSuperAdminSuccess:
+      type: object
+      properties:
+        message:
+          type: string
+        user_id:
+          type: integer
+        email:
+          type: string
+          format: email
+        username:
+          type: string
+      required:
+      - email
+      - message
+      - user_id
+      - username
+    Department:
+      type: object
+      description: |-
+        Serializer for Department model with organization enforcement.
+        Organization is auto-assigned from request user, excluded from create/update.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          description: Department name (e.g., Human Resources, Information Technology)
+          maxLength: 100
+        description:
+          type: string
+          description: Detailed description of the department's purpose and responsibilities
+        is_active:
+          type: boolean
+          description: Whether this department is currently active
+        organization:
+          allOf:
+          - $ref: '#/components/schemas/OrganizationList'
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - name
+      - organization
+      - updated_at
+    DepartmentRequest:
+      type: object
+      description: |-
+        Serializer for Department model with organization enforcement.
+        Organization is auto-assigned from request user, excluded from create/update.
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: Department name (e.g., Human Resources, Information Technology)
+          maxLength: 100
+        description:
+          type: string
+          description: Detailed description of the department's purpose and responsibilities
+        is_active:
+          type: boolean
+          description: Whether this department is currently active
+        organization_id:
+          type: integer
+          writeOnly: true
+      required:
+      - name
+    Designation:
+      type: object
+      description: |-
+        Serializer for Designation model with organization enforcement.
+        Organization is auto-assigned from request user, excluded from create/update.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          description: Designation name (e.g., Senior Manager, Software Engineer)
+          maxLength: 100
+        description:
+          type: string
+          description: Detailed description of the designation's role and responsibilities
+        is_active:
+          type: boolean
+          description: Whether this designation is currently active
+        organization:
+          allOf:
+          - $ref: '#/components/schemas/OrganizationList'
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - name
+      - organization
+      - updated_at
+    DesignationRequest:
+      type: object
+      description: |-
+        Serializer for Designation model with organization enforcement.
+        Organization is auto-assigned from request user, excluded from create/update.
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: Designation name (e.g., Senior Manager, Software Engineer)
+          maxLength: 100
+        description:
+          type: string
+          description: Detailed description of the designation's role and responsibilities
+        is_active:
+          type: boolean
+          description: Whether this designation is currently active
+        organization_id:
+          type: integer
+          writeOnly: true
+      required:
+      - name
     EmailExistRequestRequest:
       type: object
       properties:
@@ -1689,6 +4002,677 @@ components:
       required:
       - message
       - status
+    Employee:
+      type: object
+      description: |-
+        Serializer for Employee model with nested relationships.
+        Organization is auto-assigned from request user, excluded from create/update.
+        All ForeignKey relations must belong to the same organization.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        employee_code:
+          type: string
+          description: Unique employee code within organization
+          maxLength: 20
+        user:
+          type: integer
+          nullable: true
+          description: Link to user account for login-enabled employees
+        department:
+          type: integer
+          nullable: true
+        department_detail:
+          allOf:
+          - $ref: '#/components/schemas/Department'
+          readOnly: true
+        designation:
+          type: integer
+          nullable: true
+        designation_detail:
+          allOf:
+          - $ref: '#/components/schemas/Designation'
+          readOnly: true
+        shift:
+          type: integer
+          nullable: true
+        shift_detail:
+          allOf:
+          - $ref: '#/components/schemas/Shift'
+          readOnly: true
+        employee_type:
+          type: integer
+          nullable: true
+        employee_type_detail:
+          allOf:
+          - $ref: '#/components/schemas/EmployeeType'
+          readOnly: true
+        scale_category:
+          type: integer
+          nullable: true
+        scale_category_detail:
+          allOf:
+          - $ref: '#/components/schemas/ScaleCategory'
+          readOnly: true
+        first_name:
+          type: string
+          description: Employee's first name
+          maxLength: 100
+        middle_name:
+          type: string
+          description: Employee's middle name (optional)
+          maxLength: 100
+        last_name:
+          type: string
+          description: Employee's last name
+          maxLength: 100
+        full_name:
+          type: string
+          readOnly: true
+        date_of_birth:
+          type: string
+          format: date
+          nullable: true
+          description: Employee's date of birth
+        gender:
+          allOf:
+          - $ref: '#/components/schemas/GenderEnum'
+          description: |-
+            Employee's gender
+
+            * `MALE` - Male
+            * `FEMALE` - Female
+            * `OTHER` - Other
+        joining_date:
+          type: string
+          format: date
+          description: Date when employee joined the organization
+        employment_status:
+          allOf:
+          - $ref: '#/components/schemas/EmploymentStatusEnum'
+          description: |-
+            Current employment status
+
+            * `ACTIVE` - Active
+            * `INACTIVE` - Inactive
+            * `TERMINATED` - Terminated
+            * `RESIGNED` - Resigned
+        is_active:
+          type: boolean
+          description: Whether the employee is currently active
+        personal_info:
+          allOf:
+          - $ref: '#/components/schemas/EmployeePersonal'
+          readOnly: true
+          nullable: true
+        contact_info:
+          allOf:
+          - $ref: '#/components/schemas/EmployeeContact'
+          readOnly: true
+          nullable: true
+        government_info:
+          allOf:
+          - $ref: '#/components/schemas/EmployeeGovernment'
+          readOnly: true
+          nullable: true
+        organization:
+          allOf:
+          - $ref: '#/components/schemas/OrganizationList'
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - contact_info
+      - created_at
+      - department_detail
+      - designation_detail
+      - employee_code
+      - employee_type_detail
+      - first_name
+      - full_name
+      - gender
+      - government_info
+      - id
+      - joining_date
+      - last_name
+      - organization
+      - personal_info
+      - scale_category_detail
+      - shift_detail
+      - updated_at
+    EmployeeContact:
+      type: object
+      description: |-
+        Serializer for EmployeeContact model.
+        Links to employee with validation for same organization.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        mobile_number:
+          type: string
+          description: Primary mobile/phone number
+          maxLength: 20
+        alternate_mobile:
+          type: string
+          description: Alternate contact number
+          maxLength: 20
+        personal_email:
+          type: string
+          format: email
+          description: Personal email address
+          maxLength: 254
+        official_email:
+          type: string
+          format: email
+          description: Official/company email address
+          maxLength: 254
+        present_address:
+          type: string
+          description: Current residential address
+        permanent_address:
+          type: string
+          description: Permanent/home address
+        city:
+          type: string
+          description: City of residence
+          maxLength: 100
+        state:
+          type: string
+          description: State/province of residence
+          maxLength: 100
+        country:
+          type: string
+          description: Country of residence
+          maxLength: 100
+        postal_code:
+          type: string
+          description: Postal/ZIP code
+          maxLength: 20
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - mobile_number
+      - updated_at
+    EmployeeContactRequest:
+      type: object
+      description: |-
+        Serializer for EmployeeContact model.
+        Links to employee with validation for same organization.
+      properties:
+        employee:
+          type: integer
+          writeOnly: true
+        mobile_number:
+          type: string
+          minLength: 1
+          description: Primary mobile/phone number
+          maxLength: 20
+        alternate_mobile:
+          type: string
+          description: Alternate contact number
+          maxLength: 20
+        personal_email:
+          type: string
+          format: email
+          description: Personal email address
+          maxLength: 254
+        official_email:
+          type: string
+          format: email
+          description: Official/company email address
+          maxLength: 254
+        present_address:
+          type: string
+          description: Current residential address
+        permanent_address:
+          type: string
+          description: Permanent/home address
+        city:
+          type: string
+          description: City of residence
+          maxLength: 100
+        state:
+          type: string
+          description: State/province of residence
+          maxLength: 100
+        country:
+          type: string
+          description: Country of residence
+          maxLength: 100
+        postal_code:
+          type: string
+          description: Postal/ZIP code
+          maxLength: 20
+      required:
+      - employee
+      - mobile_number
+    EmployeeGovernment:
+      type: object
+      description: |-
+        Serializer for EmployeeGovernment model.
+        Links to employee with validation for same organization.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        national_id:
+          type: string
+          description: National ID number (CNIC/NIC)
+          maxLength: 50
+        passport_number:
+          type: string
+          description: Passport number
+          maxLength: 50
+        tax_identification:
+          type: string
+          description: Tax identification number (NTN)
+          maxLength: 50
+        social_security:
+          type: string
+          description: Social security number (EOBI)
+          maxLength: 50
+        bank_account_number:
+          type: string
+          description: Bank account number for salary deposits
+          maxLength: 50
+        bank_name:
+          type: string
+          description: Name of the bank
+          maxLength: 100
+        bank_branch:
+          type: string
+          description: Bank branch location
+          maxLength: 100
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - updated_at
+    EmployeeGovernmentRequest:
+      type: object
+      description: |-
+        Serializer for EmployeeGovernment model.
+        Links to employee with validation for same organization.
+      properties:
+        employee:
+          type: integer
+          writeOnly: true
+        national_id:
+          type: string
+          description: National ID number (CNIC/NIC)
+          maxLength: 50
+        passport_number:
+          type: string
+          description: Passport number
+          maxLength: 50
+        tax_identification:
+          type: string
+          description: Tax identification number (NTN)
+          maxLength: 50
+        social_security:
+          type: string
+          description: Social security number (EOBI)
+          maxLength: 50
+        bank_account_number:
+          type: string
+          description: Bank account number for salary deposits
+          maxLength: 50
+        bank_name:
+          type: string
+          description: Name of the bank
+          maxLength: 100
+        bank_branch:
+          type: string
+          description: Bank branch location
+          maxLength: 100
+      required:
+      - employee
+    EmployeeList:
+      type: object
+      description: Lightweight serializer for listing employees.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        employee_code:
+          type: string
+          description: Unique employee code within organization
+          maxLength: 20
+        full_name:
+          type: string
+          readOnly: true
+        department_name:
+          type: string
+          readOnly: true
+        designation_name:
+          type: string
+          readOnly: true
+        employment_status:
+          allOf:
+          - $ref: '#/components/schemas/EmploymentStatusEnum'
+          description: |-
+            Current employment status
+
+            * `ACTIVE` - Active
+            * `INACTIVE` - Inactive
+            * `TERMINATED` - Terminated
+            * `RESIGNED` - Resigned
+        is_active:
+          type: boolean
+          description: Whether the employee is currently active
+      required:
+      - department_name
+      - designation_name
+      - employee_code
+      - full_name
+      - id
+    EmployeePersonal:
+      type: object
+      description: |-
+        Serializer for EmployeePersonal model.
+        Links to employee with validation for same organization.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        father_name:
+          type: string
+          description: Father's full name
+          maxLength: 100
+        mother_name:
+          type: string
+          description: Mother's full name
+          maxLength: 100
+        marital_status:
+          description: |-
+            Current marital status
+
+            * `SINGLE` - Single
+            * `MARRIED` - Married
+            * `DIVORCED` - Divorced
+            * `WIDOWED` - Widowed
+          oneOf:
+          - $ref: '#/components/schemas/MaritalStatusEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        blood_group:
+          description: |-
+            Blood group type
+
+            * `A+` - A+
+            * `A-` - A-
+            * `B+` - B+
+            * `B-` - B-
+            * `O+` - O+
+            * `O-` - O-
+            * `AB+` - AB+
+            * `AB-` - AB-
+          oneOf:
+          - $ref: '#/components/schemas/BloodGroupEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        nationality:
+          type: string
+          description: Nationality/citizenship
+          maxLength: 50
+        religion:
+          type: integer
+          nullable: true
+        religion_name:
+          type: string
+          readOnly: true
+        qualification:
+          type: integer
+          nullable: true
+        qualification_name:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - qualification_name
+      - religion_name
+      - updated_at
+    EmployeePersonalRequest:
+      type: object
+      description: |-
+        Serializer for EmployeePersonal model.
+        Links to employee with validation for same organization.
+      properties:
+        employee:
+          type: integer
+          writeOnly: true
+        father_name:
+          type: string
+          description: Father's full name
+          maxLength: 100
+        mother_name:
+          type: string
+          description: Mother's full name
+          maxLength: 100
+        marital_status:
+          description: |-
+            Current marital status
+
+            * `SINGLE` - Single
+            * `MARRIED` - Married
+            * `DIVORCED` - Divorced
+            * `WIDOWED` - Widowed
+          oneOf:
+          - $ref: '#/components/schemas/MaritalStatusEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        blood_group:
+          description: |-
+            Blood group type
+
+            * `A+` - A+
+            * `A-` - A-
+            * `B+` - B+
+            * `B-` - B-
+            * `O+` - O+
+            * `O-` - O-
+            * `AB+` - AB+
+            * `AB-` - AB-
+          oneOf:
+          - $ref: '#/components/schemas/BloodGroupEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        nationality:
+          type: string
+          description: Nationality/citizenship
+          maxLength: 50
+        religion:
+          type: integer
+          nullable: true
+        qualification:
+          type: integer
+          nullable: true
+      required:
+      - employee
+    EmployeeRequest:
+      type: object
+      description: |-
+        Serializer for Employee model with nested relationships.
+        Organization is auto-assigned from request user, excluded from create/update.
+        All ForeignKey relations must belong to the same organization.
+      properties:
+        employee_code:
+          type: string
+          minLength: 1
+          description: Unique employee code within organization
+          maxLength: 20
+        user:
+          type: integer
+          nullable: true
+          description: Link to user account for login-enabled employees
+        department:
+          type: integer
+          nullable: true
+        designation:
+          type: integer
+          nullable: true
+        shift:
+          type: integer
+          nullable: true
+        employee_type:
+          type: integer
+          nullable: true
+        scale_category:
+          type: integer
+          nullable: true
+        first_name:
+          type: string
+          minLength: 1
+          description: Employee's first name
+          maxLength: 100
+        middle_name:
+          type: string
+          description: Employee's middle name (optional)
+          maxLength: 100
+        last_name:
+          type: string
+          minLength: 1
+          description: Employee's last name
+          maxLength: 100
+        date_of_birth:
+          type: string
+          format: date
+          nullable: true
+          description: Employee's date of birth
+        gender:
+          allOf:
+          - $ref: '#/components/schemas/GenderEnum'
+          description: |-
+            Employee's gender
+
+            * `MALE` - Male
+            * `FEMALE` - Female
+            * `OTHER` - Other
+        joining_date:
+          type: string
+          format: date
+          description: Date when employee joined the organization
+        employment_status:
+          allOf:
+          - $ref: '#/components/schemas/EmploymentStatusEnum'
+          description: |-
+            Current employment status
+
+            * `ACTIVE` - Active
+            * `INACTIVE` - Inactive
+            * `TERMINATED` - Terminated
+            * `RESIGNED` - Resigned
+        is_active:
+          type: boolean
+          description: Whether the employee is currently active
+        organization_id:
+          type: integer
+          writeOnly: true
+      required:
+      - employee_code
+      - first_name
+      - gender
+      - joining_date
+      - last_name
+    EmployeeType:
+      type: object
+      description: |-
+        Serializer for EmployeeType model with organization enforcement.
+        Organization is auto-assigned from request user, excluded from create/update.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          description: Employee type name (e.g., Permanent, Contract, Probation, Intern)
+          maxLength: 100
+        description:
+          type: string
+          description: Detailed description of the employee type and its terms
+        is_active:
+          type: boolean
+          description: Whether this employee type is currently active
+        organization:
+          allOf:
+          - $ref: '#/components/schemas/OrganizationList'
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - name
+      - organization
+      - updated_at
+    EmployeeTypeRequest:
+      type: object
+      description: |-
+        Serializer for EmployeeType model with organization enforcement.
+        Organization is auto-assigned from request user, excluded from create/update.
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: Employee type name (e.g., Permanent, Contract, Probation, Intern)
+          maxLength: 100
+        description:
+          type: string
+          description: Detailed description of the employee type and its terms
+        is_active:
+          type: boolean
+          description: Whether this employee type is currently active
+        organization_id:
+          type: integer
+          writeOnly: true
+      required:
+      - name
+    EmploymentStatusEnum:
+      enum:
+      - ACTIVE
+      - INACTIVE
+      - TERMINATED
+      - RESIGNED
+      type: string
+      description: |-
+        * `ACTIVE` - Active
+        * `INACTIVE` - Inactive
+        * `TERMINATED` - Terminated
+        * `RESIGNED` - Resigned
     ForgetPasswordRequest:
       type: object
       properties:
@@ -1705,6 +4689,28 @@ components:
           type: string
       required:
       - message
+    GenderEnum:
+      enum:
+      - MALE
+      - FEMALE
+      - OTHER
+      type: string
+      description: |-
+        * `MALE` - Male
+        * `FEMALE` - Female
+        * `OTHER` - Other
+    MaritalStatusEnum:
+      enum:
+      - SINGLE
+      - MARRIED
+      - DIVORCED
+      - WIDOWED
+      type: string
+      description: |-
+        * `SINGLE` - Single
+        * `MARRIED` - Married
+        * `DIVORCED` - Divorced
+        * `WIDOWED` - Widowed
     Organization:
       type: object
       description: Serializer for Organization model.
@@ -1816,6 +4822,285 @@ components:
         new_password:
           type: string
           minLength: 1
+    PatchedDepartmentRequest:
+      type: object
+      description: |-
+        Serializer for Department model with organization enforcement.
+        Organization is auto-assigned from request user, excluded from create/update.
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: Department name (e.g., Human Resources, Information Technology)
+          maxLength: 100
+        description:
+          type: string
+          description: Detailed description of the department's purpose and responsibilities
+        is_active:
+          type: boolean
+          description: Whether this department is currently active
+        organization_id:
+          type: integer
+          writeOnly: true
+    PatchedDesignationRequest:
+      type: object
+      description: |-
+        Serializer for Designation model with organization enforcement.
+        Organization is auto-assigned from request user, excluded from create/update.
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: Designation name (e.g., Senior Manager, Software Engineer)
+          maxLength: 100
+        description:
+          type: string
+          description: Detailed description of the designation's role and responsibilities
+        is_active:
+          type: boolean
+          description: Whether this designation is currently active
+        organization_id:
+          type: integer
+          writeOnly: true
+    PatchedEmployeeContactRequest:
+      type: object
+      description: |-
+        Serializer for EmployeeContact model.
+        Links to employee with validation for same organization.
+      properties:
+        employee:
+          type: integer
+          writeOnly: true
+        mobile_number:
+          type: string
+          minLength: 1
+          description: Primary mobile/phone number
+          maxLength: 20
+        alternate_mobile:
+          type: string
+          description: Alternate contact number
+          maxLength: 20
+        personal_email:
+          type: string
+          format: email
+          description: Personal email address
+          maxLength: 254
+        official_email:
+          type: string
+          format: email
+          description: Official/company email address
+          maxLength: 254
+        present_address:
+          type: string
+          description: Current residential address
+        permanent_address:
+          type: string
+          description: Permanent/home address
+        city:
+          type: string
+          description: City of residence
+          maxLength: 100
+        state:
+          type: string
+          description: State/province of residence
+          maxLength: 100
+        country:
+          type: string
+          description: Country of residence
+          maxLength: 100
+        postal_code:
+          type: string
+          description: Postal/ZIP code
+          maxLength: 20
+    PatchedEmployeeGovernmentRequest:
+      type: object
+      description: |-
+        Serializer for EmployeeGovernment model.
+        Links to employee with validation for same organization.
+      properties:
+        employee:
+          type: integer
+          writeOnly: true
+        national_id:
+          type: string
+          description: National ID number (CNIC/NIC)
+          maxLength: 50
+        passport_number:
+          type: string
+          description: Passport number
+          maxLength: 50
+        tax_identification:
+          type: string
+          description: Tax identification number (NTN)
+          maxLength: 50
+        social_security:
+          type: string
+          description: Social security number (EOBI)
+          maxLength: 50
+        bank_account_number:
+          type: string
+          description: Bank account number for salary deposits
+          maxLength: 50
+        bank_name:
+          type: string
+          description: Name of the bank
+          maxLength: 100
+        bank_branch:
+          type: string
+          description: Bank branch location
+          maxLength: 100
+    PatchedEmployeePersonalRequest:
+      type: object
+      description: |-
+        Serializer for EmployeePersonal model.
+        Links to employee with validation for same organization.
+      properties:
+        employee:
+          type: integer
+          writeOnly: true
+        father_name:
+          type: string
+          description: Father's full name
+          maxLength: 100
+        mother_name:
+          type: string
+          description: Mother's full name
+          maxLength: 100
+        marital_status:
+          description: |-
+            Current marital status
+
+            * `SINGLE` - Single
+            * `MARRIED` - Married
+            * `DIVORCED` - Divorced
+            * `WIDOWED` - Widowed
+          oneOf:
+          - $ref: '#/components/schemas/MaritalStatusEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        blood_group:
+          description: |-
+            Blood group type
+
+            * `A+` - A+
+            * `A-` - A-
+            * `B+` - B+
+            * `B-` - B-
+            * `O+` - O+
+            * `O-` - O-
+            * `AB+` - AB+
+            * `AB-` - AB-
+          oneOf:
+          - $ref: '#/components/schemas/BloodGroupEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        nationality:
+          type: string
+          description: Nationality/citizenship
+          maxLength: 50
+        religion:
+          type: integer
+          nullable: true
+        qualification:
+          type: integer
+          nullable: true
+    PatchedEmployeeRequest:
+      type: object
+      description: |-
+        Serializer for Employee model with nested relationships.
+        Organization is auto-assigned from request user, excluded from create/update.
+        All ForeignKey relations must belong to the same organization.
+      properties:
+        employee_code:
+          type: string
+          minLength: 1
+          description: Unique employee code within organization
+          maxLength: 20
+        user:
+          type: integer
+          nullable: true
+          description: Link to user account for login-enabled employees
+        department:
+          type: integer
+          nullable: true
+        designation:
+          type: integer
+          nullable: true
+        shift:
+          type: integer
+          nullable: true
+        employee_type:
+          type: integer
+          nullable: true
+        scale_category:
+          type: integer
+          nullable: true
+        first_name:
+          type: string
+          minLength: 1
+          description: Employee's first name
+          maxLength: 100
+        middle_name:
+          type: string
+          description: Employee's middle name (optional)
+          maxLength: 100
+        last_name:
+          type: string
+          minLength: 1
+          description: Employee's last name
+          maxLength: 100
+        date_of_birth:
+          type: string
+          format: date
+          nullable: true
+          description: Employee's date of birth
+        gender:
+          allOf:
+          - $ref: '#/components/schemas/GenderEnum'
+          description: |-
+            Employee's gender
+
+            * `MALE` - Male
+            * `FEMALE` - Female
+            * `OTHER` - Other
+        joining_date:
+          type: string
+          format: date
+          description: Date when employee joined the organization
+        employment_status:
+          allOf:
+          - $ref: '#/components/schemas/EmploymentStatusEnum'
+          description: |-
+            Current employment status
+
+            * `ACTIVE` - Active
+            * `INACTIVE` - Inactive
+            * `TERMINATED` - Terminated
+            * `RESIGNED` - Resigned
+        is_active:
+          type: boolean
+          description: Whether the employee is currently active
+        organization_id:
+          type: integer
+          writeOnly: true
+    PatchedEmployeeTypeRequest:
+      type: object
+      description: |-
+        Serializer for EmployeeType model with organization enforcement.
+        Organization is auto-assigned from request user, excluded from create/update.
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: Employee type name (e.g., Permanent, Contract, Probation, Intern)
+          maxLength: 100
+        description:
+          type: string
+          description: Detailed description of the employee type and its terms
+        is_active:
+          type: boolean
+          description: Whether this employee type is currently active
+        organization_id:
+          type: integer
+          writeOnly: true
     PatchedOrganizationRequest:
       type: object
       description: Serializer for Organization model.
@@ -1846,24 +5131,118 @@ components:
         description:
           type: string
           nullable: true
+    PatchedQualificationRequest:
+      type: object
+      description: |-
+        Serializer for Qualification model.
+        Global master data - no organization linkage.
+      properties:
+        code:
+          type: string
+          minLength: 1
+          description: Unique qualification code (e.g., BS, MS, PHD, DIPLOMA)
+          maxLength: 20
+        name:
+          type: string
+          minLength: 1
+          description: Qualification name (e.g., Bachelor's Degree, Master's Degree,
+            PhD)
+          maxLength: 100
+        description:
+          type: string
+          description: Detailed description of the qualification level and requirements
+        is_active:
+          type: boolean
+          description: Whether this qualification is currently active
+    PatchedReligionRequest:
+      type: object
+      description: |-
+        Serializer for Religion model.
+        Global master data - no organization linkage.
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: Religion name (e.g., Islam, Christianity, Hinduism, Buddhism)
+          maxLength: 100
+        description:
+          type: string
+          description: Optional description or notes about the religion
+        is_active:
+          type: boolean
+          description: Whether this religion option is currently active
     PatchedRoleRequest:
       type: object
       description: |-
-        Serializer for Role model with strict organization enforcement.
+        Serializer for Role model with organization handling.
 
-        Organization is read-only and automatically assigned from the logged-in user.
-        This prevents API clients from creating roles in other organizations.
+        - organization_id: Write-only field for creating roles (required for super admin)
+        - organization: Read-only field showing full organization details in response
+
+        Organization assignment is validated in the view layer.
       properties:
         name:
           type: string
           minLength: 1
           description: Role name (e.g., 'Admin', 'Manager', 'User')
           maxLength: 255
+        organization_id:
+          type: integer
+          writeOnly: true
         description:
           type: string
           nullable: true
         is_active:
           type: boolean
+    PatchedScaleCategoryRequest:
+      type: object
+      description: |-
+        Serializer for ScaleCategory model with organization enforcement.
+        Organization is auto-assigned from request user, excluded from create/update.
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: Scale category name (e.g., Scale A, Executive Scale, Officer
+            Grade)
+          maxLength: 100
+        description:
+          type: string
+          description: Detailed description of the scale category and salary range
+        is_active:
+          type: boolean
+          description: Whether this scale category is currently active
+        organization_id:
+          type: integer
+          writeOnly: true
+    PatchedShiftRequest:
+      type: object
+      description: |-
+        Serializer for Shift model with organization enforcement.
+        Organization is auto-assigned from request user, excluded from create/update.
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: Shift name (e.g., Morning Shift, Night Shift, General)
+          maxLength: 100
+        description:
+          type: string
+          description: Detailed description of the shift timing and requirements
+        start_time:
+          type: string
+          format: time
+          description: Shift start time (e.g., 08:00:00)
+        end_time:
+          type: string
+          format: time
+          description: Shift end time (e.g., 17:00:00)
+        is_active:
+          type: boolean
+          description: Whether this shift is currently active
+        organization_id:
+          type: integer
+          writeOnly: true
     PatchedUserDetailRequest:
       type: object
       description: |-
@@ -2074,6 +5453,70 @@ components:
           type: string
           format: binary
           description: Profile image
+    Qualification:
+      type: object
+      description: |-
+        Serializer for Qualification model.
+        Global master data - no organization linkage.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        code:
+          type: string
+          description: Unique qualification code (e.g., BS, MS, PHD, DIPLOMA)
+          maxLength: 20
+        name:
+          type: string
+          description: Qualification name (e.g., Bachelor's Degree, Master's Degree,
+            PhD)
+          maxLength: 100
+        description:
+          type: string
+          description: Detailed description of the qualification level and requirements
+        is_active:
+          type: boolean
+          description: Whether this qualification is currently active
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - code
+      - created_at
+      - id
+      - name
+      - updated_at
+    QualificationRequest:
+      type: object
+      description: |-
+        Serializer for Qualification model.
+        Global master data - no organization linkage.
+      properties:
+        code:
+          type: string
+          minLength: 1
+          description: Unique qualification code (e.g., BS, MS, PHD, DIPLOMA)
+          maxLength: 20
+        name:
+          type: string
+          minLength: 1
+          description: Qualification name (e.g., Bachelor's Degree, Master's Degree,
+            PhD)
+          maxLength: 100
+        description:
+          type: string
+          description: Detailed description of the qualification level and requirements
+        is_active:
+          type: boolean
+          description: Whether this qualification is currently active
+      required:
+      - code
+      - name
     RegisterDisabled:
       type: object
       properties:
@@ -2103,6 +5546,57 @@ components:
           writeOnly: true
           minLength: 1
           description: Not used - registration disabled
+    Religion:
+      type: object
+      description: |-
+        Serializer for Religion model.
+        Global master data - no organization linkage.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          description: Religion name (e.g., Islam, Christianity, Hinduism, Buddhism)
+          maxLength: 100
+        description:
+          type: string
+          description: Optional description or notes about the religion
+        is_active:
+          type: boolean
+          description: Whether this religion option is currently active
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - name
+      - updated_at
+    ReligionRequest:
+      type: object
+      description: |-
+        Serializer for Religion model.
+        Global master data - no organization linkage.
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: Religion name (e.g., Islam, Christianity, Hinduism, Buddhism)
+          maxLength: 100
+        description:
+          type: string
+          description: Optional description or notes about the religion
+        is_active:
+          type: boolean
+          description: Whether this religion option is currently active
+      required:
+      - name
     ResendActivationSuccess:
       type: object
       properties:
@@ -2137,10 +5631,12 @@ components:
     Role:
       type: object
       description: |-
-        Serializer for Role model with strict organization enforcement.
+        Serializer for Role model with organization handling.
 
-        Organization is read-only and automatically assigned from the logged-in user.
-        This prevents API clients from creating roles in other organizations.
+        - organization_id: Write-only field for creating roles (required for super admin)
+        - organization: Read-only field showing full organization details in response
+
+        Organization assignment is validated in the view layer.
       properties:
         id:
           type: integer
@@ -2205,16 +5701,21 @@ components:
     RoleRequest:
       type: object
       description: |-
-        Serializer for Role model with strict organization enforcement.
+        Serializer for Role model with organization handling.
 
-        Organization is read-only and automatically assigned from the logged-in user.
-        This prevents API clients from creating roles in other organizations.
+        - organization_id: Write-only field for creating roles (required for super admin)
+        - organization: Read-only field showing full organization details in response
+
+        Organization assignment is validated in the view layer.
       properties:
         name:
           type: string
           minLength: 1
           description: Role name (e.g., 'Admin', 'Manager', 'User')
           maxLength: 255
+        organization_id:
+          type: integer
+          writeOnly: true
         description:
           type: string
           nullable: true
@@ -2222,6 +5723,146 @@ components:
           type: boolean
       required:
       - name
+    ScaleCategory:
+      type: object
+      description: |-
+        Serializer for ScaleCategory model with organization enforcement.
+        Organization is auto-assigned from request user, excluded from create/update.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          description: Scale category name (e.g., Scale A, Executive Scale, Officer
+            Grade)
+          maxLength: 100
+        description:
+          type: string
+          description: Detailed description of the scale category and salary range
+        is_active:
+          type: boolean
+          description: Whether this scale category is currently active
+        organization:
+          allOf:
+          - $ref: '#/components/schemas/OrganizationList'
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - name
+      - organization
+      - updated_at
+    ScaleCategoryRequest:
+      type: object
+      description: |-
+        Serializer for ScaleCategory model with organization enforcement.
+        Organization is auto-assigned from request user, excluded from create/update.
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: Scale category name (e.g., Scale A, Executive Scale, Officer
+            Grade)
+          maxLength: 100
+        description:
+          type: string
+          description: Detailed description of the scale category and salary range
+        is_active:
+          type: boolean
+          description: Whether this scale category is currently active
+        organization_id:
+          type: integer
+          writeOnly: true
+      required:
+      - name
+    Shift:
+      type: object
+      description: |-
+        Serializer for Shift model with organization enforcement.
+        Organization is auto-assigned from request user, excluded from create/update.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          description: Shift name (e.g., Morning Shift, Night Shift, General)
+          maxLength: 100
+        description:
+          type: string
+          description: Detailed description of the shift timing and requirements
+        start_time:
+          type: string
+          format: time
+          description: Shift start time (e.g., 08:00:00)
+        end_time:
+          type: string
+          format: time
+          description: Shift end time (e.g., 17:00:00)
+        is_active:
+          type: boolean
+          description: Whether this shift is currently active
+        organization:
+          allOf:
+          - $ref: '#/components/schemas/OrganizationList'
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - end_time
+      - id
+      - name
+      - organization
+      - start_time
+      - updated_at
+    ShiftRequest:
+      type: object
+      description: |-
+        Serializer for Shift model with organization enforcement.
+        Organization is auto-assigned from request user, excluded from create/update.
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: Shift name (e.g., Morning Shift, Night Shift, General)
+          maxLength: 100
+        description:
+          type: string
+          description: Detailed description of the shift timing and requirements
+        start_time:
+          type: string
+          format: time
+          description: Shift start time (e.g., 08:00:00)
+        end_time:
+          type: string
+          format: time
+          description: Shift end time (e.g., 17:00:00)
+        is_active:
+          type: boolean
+          description: Whether this shift is currently active
+        organization_id:
+          type: integer
+          writeOnly: true
+      required:
+      - end_time
+      - name
+      - start_time
     TokenObtainPair:
       type: object
       properties:

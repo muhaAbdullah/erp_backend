@@ -8,10 +8,12 @@ A production-ready Django REST Framework backend featuring **admin-controlled us
 - ✅ **Admin-Controlled User Creation** - No public registration, full administrative control
 - ✅ **Multi-Tenancy** - Complete data isolation between organizations
 - ✅ **RBAC System** - Granular permission management with role-based access
+- ✅ **HRM Module** - Complete employee management with lifecycle tracking
 - ✅ **Tenant Middleware** - Automatic data filtering by organization
 - ✅ **Super Admin Support** - Cross-organization access for platform administrators
 - ✅ **JWT Authentication** - Secure token-based authentication
 - ✅ **RESTful API** - Complete REST API with Swagger documentation
+- ✅ **Audit Logging** - Comprehensive tracking of all operations
 - ✅ **Comprehensive Tests** - 20+ test cases with 95% coverage
 
 ---
@@ -45,6 +47,9 @@ cp env.example .env
 # Run migrations
 python manage.py migrate
 
+# Run HRM migrations
+python manage.py migrate hrm
+
 # Create super admin
 python manage.py createsuperuser
 
@@ -64,6 +69,46 @@ python manage.py runserver
 - **API:** http://localhost:8000/api/
 - **Swagger UI:** http://localhost:8000/api/schema/swagger-ui/
 - **Django Admin:** http://localhost:8000/api/admin/
+
+---
+
+## 🚀 Quick Start: HRM Module
+
+Once the system is set up, you can start using the HRM module:
+
+```bash
+# 1. Login as admin
+curl -X POST http://localhost:8000/api/user/login/ \
+  -H "Content-Type: application/json" \
+  -d '{"email": "admin@example.com", "password": "your_password"}'
+
+# Save the access token from response
+
+# 2. Create a department
+curl -X POST http://localhost:8000/api/hrm/departments/ \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "IT", "code": "IT", "is_active": true}'
+
+# 3. Create an employee
+curl -X POST http://localhost:8000/api/hrm/employees/ \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "employee_code": "EMP-001",
+    "first_name": "John",
+    "last_name": "Doe",
+    "gender": "MALE",
+    "joining_date": "2024-01-01",
+    "employment_status": "ACTIVE"
+  }'
+
+# 4. List all employees
+curl -X GET http://localhost:8000/api/hrm/employees/ \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+For detailed HRM usage, see [HRM_MODULE_IMPLEMENTATION.md](HRM_MODULE_IMPLEMENTATION.md)
 
 ---
 
@@ -211,6 +256,34 @@ GET    /api/user/permissions/         # List all permissions
 GET    /api/user/permissions/{id}/    # Get permission details
 ```
 
+### HRM Module
+```http
+# Employee Management
+GET    /api/hrm/employees/            # List employees (tenant-filtered)
+POST   /api/hrm/employees/            # Create employee
+GET    /api/hrm/employees/{id}/       # Get employee details
+PATCH  /api/hrm/employees/{id}/       # Update employee
+DELETE /api/hrm/employees/{id}/       # Delete employee
+POST   /api/hrm/employees/{id}/activate/    # Activate employee
+POST   /api/hrm/employees/{id}/deactivate/  # Deactivate employee
+
+# Employee Details
+GET/POST/PATCH /api/hrm/employee-personal/     # Personal information
+GET/POST/PATCH /api/hrm/employee-contact/      # Contact information
+GET/POST/PATCH /api/hrm/employee-government/   # Government IDs & banking
+
+# Master Data (Organization-Specific)
+GET/POST /api/hrm/departments/         # Departments
+GET/POST /api/hrm/designations/        # Job titles
+GET/POST /api/hrm/shifts/              # Work schedules
+GET/POST /api/hrm/employee-types/      # Employment types
+GET/POST /api/hrm/scale-categories/    # Salary grades
+
+# Global Master Data
+GET    /api/hrm/religions/             # Religions (read-only for users)
+GET    /api/hrm/qualifications/        # Qualifications (read-only for users)
+```
+
 ### Disabled Endpoints
 ```http
 POST   /api/user/register/            # ❌ Returns 403 Forbidden
@@ -229,6 +302,8 @@ POST   /api/user/register/            # ❌ Returns 403 Forbidden
 | **Role** | `role.create`, `role.read`, `role.update`, `role.delete` |
 | **Organization** | `organization.create`, `organization.read`, `organization.update`, `organization.delete` |
 | **Profile** | `profile.create`, `profile.read`, `profile.update`, `profile.delete` |
+| **HRM Employee** | `view_employee`, `create_employee`, `update_employee`, `delete_employee` |
+| **HRM Masters** | `manage_hrm_masters` (for departments, designations, shifts, etc.) |
 
 ### Permission Checking
 
@@ -290,10 +365,16 @@ python manage.py test apps.core.tests.test_tenant_isolation.TenantIsolationTestC
 4. **[MANUAL_TESTING_GUIDE.md](MANUAL_TESTING_GUIDE.md)** - Step-by-step testing procedures
 5. **[IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md)** - Multi-tenancy implementation overview
 
+### HRM Module Documentation
+1. **[HRM_MODULE_IMPLEMENTATION.md](HRM_MODULE_IMPLEMENTATION.md)** - Complete HRM implementation guide
+2. **[HRM_API_TESTING_GUIDE.md](HRM_API_TESTING_GUIDE.md)** - HRM API testing procedures
+3. **[HRM_MODEL_RELATIONSHIPS.md](HRM_MODEL_RELATIONSHIPS.md)** - HRM data model relationships
+
 ### Quick References
 - **[QUICK_START_ENFORCEMENT.md](QUICK_START_ENFORCEMENT.md)** - Quick reference guide
 - **[RBAC_ENFORCEMENT_SUMMARY.md](RBAC_ENFORCEMENT_SUMMARY.md)** - Security enforcement details
 - **[IMPLEMENTATION_CHECKLIST.md](IMPLEMENTATION_CHECKLIST.md)** - Implementation checklist
+- **[AUDIT_LOGGING_IMPLEMENTATION.md](AUDIT_LOGGING_IMPLEMENTATION.md)** - Audit logging documentation
 
 ---
 
@@ -479,6 +560,36 @@ user.save()
 - User is not marked as super admin
 - Models inherit from BaseModel
 
+#### 5. HRM endpoints returning 403
+**Cause:** User lacks HRM permissions
+
+**Solution:**
+
+```bash
+# Check user permissions
+GET /api/user/me/
+# Look for HRM permissions: view_employee, create_employee, etc.
+
+# Assign HRM permissions to role
+POST /api/user/roles/{role_id}/assign_permissions/
+{
+  "permission_ids": [17, 18, 19, 20, 21]  # HRM permission IDs
+}
+```
+
+#### 6. Cannot create HRM master data
+**Cause:** User lacks `manage_hrm_masters` permission
+
+**Solution:**
+
+```bash
+# Assign master data permission
+POST /api/user/roles/{role_id}/assign_permissions/
+{
+  "permission_ids": [21]  # manage_hrm_masters
+}
+```
+
 See [ADMIN_USER_CREATION_GUIDE.md](ADMIN_USER_CREATION_GUIDE.md#-troubleshooting) for more troubleshooting tips.
 
 ---
@@ -509,6 +620,6 @@ For issues, questions, or contributions:
 
 ---
 
-**Last Updated:** April 21, 2026  
-**Version:** 2.0.0 (Admin-Controlled User Creation)  
+**Last Updated:** May 5, 2026
+**Version:** 2.1.0 (Admin-Controlled User Creation + HRM Module)
 **Status:** ✅ Production Ready

@@ -11,6 +11,7 @@ DJANGO_APPLICATIONS = [
 CUSTOM_APPLICATIONS = [
     'apps.core',
     'apps.userprofile',
+    'apps.hrm',
 ]
 
 THIRD_PARTY_APPLICATIONS = [
