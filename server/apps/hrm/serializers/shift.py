@@ -18,7 +18,7 @@ class ShiftSerializer(serializers.ModelSerializer):
         model = Shift
         fields = [
             'id', 'name', 'description', 'start_time', 'end_time', 'is_active',
-            'organization', 'organization_id',
+            'organization', 'organization_id', 'code',
             'created_at', 'updated_at'
         ]
         read_only_fields = ['id', 'organization', 'created_at', 'updated_at']
