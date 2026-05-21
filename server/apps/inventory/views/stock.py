@@ -102,8 +102,8 @@ class StockMovementViewSet(viewsets.ReadOnlyModelViewSet):
     def get_permissions(self):
         """Map actions to permission codes."""
         permission_map = {
-            'list': 'inventory.view_stock_movements',
-            'retrieve': 'inventory.view_stock_movements',
+            'list': 'inventory.view_stock_movement',
+            'retrieve': 'inventory.view_stock_movement',
         }
         self.permission_code = permission_map.get(self.action, 'inventory.view_stock_movements')
         return super().get_permissions()
