@@ -12,6 +12,7 @@ CUSTOM_APPLICATIONS = [
     'apps.core',
     'apps.userprofile',
     'apps.hrm',
+    'apps.inventory',
 ]
 
 THIRD_PARTY_APPLICATIONS = [

@@ -25,6 +25,7 @@ urlpatterns = [
     path('api/user/', include('apps.core.urls')),
     path('api/user-profile/', include('apps.userprofile.urls')),
     path('api/hrm/', include('apps.hrm.urls')),
+    path('api/inventory/', include('apps.inventory.urls')),
     path('api/api-auth/', include('rest_framework.urls')),
 
     # OpenAPI schema & docs

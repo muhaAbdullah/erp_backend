@@ -25,15 +25,19 @@ class EnforceOrganizationMixin:
     def perform_create(self, serializer):
         """
         Override perform_create to always set organization from request user.
-        Ignores any organization value provided in API request.
+        Super admins can specify organization_id; regular users get auto-assigned.
         
         Args:
             serializer: DRF serializer instance
         """
-        # For super admin, allow specifying organization if provided
-        if self.request.user.is_super_admin and 'organization' in serializer.validated_data:
-            # Super admin can set organization explicitly
-            serializer.save()
+        # For super admin, allow specifying organization_id if provided
+        if self.request.user.is_super_admin and 'organization_id' in serializer.validated_data:
+            # Super admin can set organization explicitly via organization_id
+            from apps.core.models import Organization
+            org_id = serializer.validated_data.pop('organization_id')
+            organization = Organization.objects.get(id=org_id)
+            serializer.save(organization=organization)
         else:
-            # Regular users: force organization from their account
+            # Regular users: force organization from their account, ignore any organization_id
+            serializer.validated_data.pop('organization_id', None)
             serializer.save(organization=self.request.user.organization)
